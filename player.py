@@ -10,12 +10,15 @@ from twisted.internet.protocol import ClientFactory
 from twisted.protocols.basic import LineReceiver
 from twisted.internet.protocol import Protocol
 from twisted.internet import reactor
+from twisted.internet.task import LoopingCall
 
 
 class Player:
 	def __init__(self, P):
    		self.creature = P
    		self.eCreature = None
+		self.id = None
+		self.state = 'start'
 
 	def tick(self):
 		return
@@ -27,22 +30,22 @@ class commandConnProtocol(Protocol):
 		self.state = 'start'
 
 	def connectionMade(self):
-		print 'Command Connection Made!' 
+		print 'Connection Made!' 
 		return
 
-	#def dataReceived(self, data):
-		if data == "Opponent Connected":
-			self.state = 'connected'
+	def dataReceived(self, data):
+		print "RECEIVED: " + str(data)
+		if self.state == 'start':
+			if data == 'Opponent Connected':
+				self.player.state = 'connected'
+			elif data == '1':
+				self.player.id = data
+			elif data == '2':
+				self.player.id = data
+				self.player.state = 'connected'
 
-	#check if opponent has connected
-	def checkPlayer(self):
-		if self.state == 'connected':
-			return 1
-		else:
-			return 0
-		
-
-		
+		#elif state == 'connected':
+			
 
 
 class commandConnFactory(ClientFactory):
@@ -53,13 +56,14 @@ class commandConnFactory(ClientFactory):
 		self.CPro = commandConnProtocol(self.p)
 		return self.CPro
 
+
 class Gamespace:
-	def main(self):
+	def __init__(self):
 		# Basic Initialization
-		#player = Player()
+		self.state = 'intro'
 		pygame.init()
-		myfont = pygame.font.SysFont("monospace",50)
-		myfont2 = pygame.font.SysFont("monospace",25)
+		self.myfont = pygame.font.SysFont("monospace",50)
+		self.myfont2 = pygame.font.SysFont("monospace",25)
 		pygame.key.set_repeat(1,50)
 
 		self.size = self.width, self.height = 640, 480
@@ -69,6 +73,16 @@ class Gamespace:
 
 		# Title Screen
 		g = 1
+		self.screen.fill(self.black)
+		image = pygame.image.load('selection.png')	
+		rect = image.get_rect()
+		title = self.myfont.render("CREATURE BATTLERS!", 1, (255,255,255))
+		inst = self.myfont2.render("<Press Any Key to Continue>", 1, (200,200,200))
+		self.screen.blit(image, rect)
+		self.screen.blit(inst, (220, 230))
+		self.screen.blit(title, (140,200))
+		pygame.display.flip()
+
 		while g:
 			events = pygame.event.get()
 			for event in events:
@@ -79,28 +93,19 @@ class Gamespace:
 				elif event.type == QUIT:
 					sys.exit()
 		
-				else:
-					self.screen.fill(self.black)
-					image = pygame.image.load('selection.png')	
-					rect = image.get_rect()
-					title = myfont.render("CREATURE BATTLERS!", 1, (255,255,255))
-					inst = myfont2.render("<Press Any Key to Continue>", 1, (200,200,200))
-					self.screen.blit(image, rect)
-					self.screen.blit(inst, (220, 230))
-					self.screen.blit(title, (140,200))
-					pygame.display.flip()
 
 		# Creature Selection Screen 
 		# Set up Player Object
+		self.screen.fill(self.black)
+		select = self.myfont.render("Select a Creature!", 1, (255,255,255))
+		image = pygame.image.load('selection2.png')	
+		rect = image.get_rect()
+		self.screen.blit(image, rect)
+		self.screen.blit(select, (200, 100))
+		pygame.display.flip()	
+		
 		g = 1	
 		while g:
-			self.screen.fill(self.black)
-			select = myfont.render("Select a Creature!", 1, (255,255,255))
-			image = pygame.image.load('selection2.png')	
-			rect = image.get_rect()
-			self.screen.blit(image, rect)
-			self.screen.blit(select, (200, 100))
-			pygame.display.flip()	
 
 			events = pygame.event.get()
 			for event in events:
@@ -124,40 +129,42 @@ class Gamespace:
 						break	
 				elif event.type == QUIT:	
 					sys.exit()
-
-		# Set up Game Objects
-		#background = 		
-		#Cfactory = commandConnFactory(self.player)
-		#reactor.connectTCP('student00.cse.nd.edu', 40020, Cfactory)
-		#reactor.run()
-
-		# Check if opponent has connected to server
-		#cp = Cfactory.CPro
-		#while not cp.checkPlayer():
-		while 1:		
-			self.screen.fill(self.black)
-			image = pygame.image.load('selection.png')	
-			rect = image.get_rect()
-			title = myfont.render("Waiting for Opponent!", 1, (255,255,255))
-			self.screen.blit(image, rect)
-			self.screen.blit(title, (140,200))
-			pygame.display.flip()
-
-			events = pygame.event.get()
-			for event in events:
-				if event.type == QUIT:
-					sys.exit()
-			
-
-			
-
-		# Start Game Loop
-
+	
+		self.screen.fill(self.black)
+		image = pygame.image.load('selection.png')	
+		rect = image.get_rect()
+		title = self.myfont.render("Waiting for Opponent!", 1, (255,255,255))
+		self.screen.blit(image, rect)
+		self.screen.blit(title, (140,200))
+		pygame.display.flip()	
 		
+
+
+	def main(self):
+		self.CFactory = commandConnFactory(self.player)
+		reactor.connectTCP('student02.cse.nd.edu', 40020, self.CFactory)
+		lc = LoopingCall(self.gameloop)
+		lc.start(1)
+		reactor.run()
+
+
+	def gameloop(self):
+		#print str(self.player.state)
+		if self.player.state == "connected":
+			print "Both Players are connected!"
+			self.state = 'connected'
+
+		if self.state == 'connected':
+			print "GAMEPLAY START!"
+			white = 255,255,255
+			self.screen.fill(white)
+			title = self.myfont.render("Start Gameplay!", 1, (23,57,100))
+			self.screen.blit(title, (220, 230))
+			pygame.display.flip()
 		
 
 
 if __name__ == '__main__':
-	g = Gamespace()
+	g = Gamespace()	
 	g.main()
 
