@@ -12,10 +12,12 @@ from twisted.internet.defer import DeferredQueue
 class serverProtocol(LineReceiver):
 	def __init__(self, F):
 		self.F = F
+		self.id = None
 		self.state = 'start'
 
 	def connectionMade(self):
-		self.transport.write(str(len(self.F.players)))
+		self.id = len(self.F.players)-1
+		self.transport.write(str(len(self.F.players)-1))
 		print "Connection #" + str(len(self.F.players))
 		if len(self.F.players) > 1:
 			self.playersConnected()

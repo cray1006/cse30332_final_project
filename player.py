@@ -11,13 +11,15 @@ from twisted.protocols.basic import LineReceiver
 from twisted.internet.protocol import Protocol
 from twisted.internet import reactor
 from twisted.internet.task import LoopingCall
+#import creature
 
 
+# Player Class
 class Player:
 	def __init__(self, P):
-   		self.creature = P
+   		self.cid = P	# Creature ID: G = grass, F = fire, W = water
    		self.eCreature = None
-		self.id = None
+		self.id = None		# id is index of server protocol list
 		self.state = 'start'
 
 	def tick(self):
@@ -34,13 +36,13 @@ class commandConnProtocol(Protocol):
 		return
 
 	def dataReceived(self, data):
-		print "RECEIVED: " + str(data)
+		
 		if self.state == 'start':
 			if data == 'Opponent Connected':
 				self.player.state = 'connected'
-			elif data == '1':
+			elif data == '0':
 				self.player.id = data
-			elif data == '2':
+			elif data == '1':
 				self.player.id = data
 				self.player.state = 'connected'
 
@@ -69,6 +71,8 @@ class Gamespace:
 		self.size = self.width, self.height = 640, 480
 		self.black = 0, 0, 0
 		self.screen = pygame.display.set_mode(self.size)
+		self.arenabackground = pygame.image.load('battlearena.png')
+		self.arenaRect = self.arenabackground.get_rect()
 		
 
 		# Title Screen
@@ -115,16 +119,25 @@ class Gamespace:
 					if mx < 205:
 						print "GRASS CREATURE SELECTED!"		
 						self.player = Player('G')
+						self.bar = pygame.image.load('grassbar.png')
+						self.barRect = self.bar.get_rect()
+						self.barRect.y = 372
 						g = 0
 						break
 					elif mx < 442:
 						print "WATER CREATURE SELECTED!"		
 						self.player = Player('W')
+						self.bar = pygame.image.load('waterbar.png')
+						self.barRect = self.bar.get_rect()
+						self.barRect.y = 372
 						g = 0
 						break	
 					elif mx < 640:
 						print "FIRE CREATURE SELECTED!"		
 						self.player = Player('F')
+						self.bar = pygame.image.load('firebar.png')
+						self.barRect = self.bar.get_rect()
+						self.barRect.y = 372
 						g = 0
 						break	
 				elif event.type == QUIT:	
@@ -143,24 +156,29 @@ class Gamespace:
 	def main(self):
 		self.CFactory = commandConnFactory(self.player)
 		reactor.connectTCP('student02.cse.nd.edu', 40020, self.CFactory)
-		lc = LoopingCall(self.gameloop)
+		lc = LoopingCall(self.gameloop)		
 		lc.start(1)
 		reactor.run()
 
 
 	def gameloop(self):
-		#print str(self.player.state)
 		if self.player.state == "connected":
-			print "Both Players are connected!"
 			self.state = 'connected'
 
+		# Check if other player is connected.
+		# If connected, start battle mode
 		if self.state == 'connected':
-			print "GAMEPLAY START!"
-			white = 255,255,255
-			self.screen.fill(white)
-			title = self.myfont.render("Start Gameplay!", 1, (23,57,100))
-			self.screen.blit(title, (220, 230))
+			# placeholder for actual tick events
+			self.screen.blit(self.arenabackground, self.arenaRect)
+			self.screen.blit(self.bar, self.barRect)
 			pygame.display.flip()
+			
+
+			
+		
+			
+
+		
 		
 
 
