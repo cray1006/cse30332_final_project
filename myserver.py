@@ -41,6 +41,12 @@ class serverProtocol(LineReceiver):
 				else:
 					self.F.players[0].switch()
 
+	def connectionLost(self, reason):
+		if self.id == 0:
+			self.F.players[1].transport.write('quit')
+		else:
+			self.F.players[0].transport.write('quit')
+
 
 class serverFactory(Factory):
 	def __init__(self):

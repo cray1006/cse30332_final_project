@@ -3,7 +3,7 @@
 # player.py
 
 
-import sys, pygame, math
+import sys, pygame, math, time
 from pygame.locals import *
 from twisted.internet.protocol import Factory
 from twisted.internet.protocol import ClientFactory
@@ -37,7 +37,6 @@ class commandConnProtocol(Protocol):
 		return
 
 	def dataReceived(self, data):
-		print str(data)
 		if self.state == 'start':
 			if data == 'Opponent Connected':
 				self.player.state = 'connected'
@@ -54,6 +53,8 @@ class commandConnProtocol(Protocol):
 		elif self.state == 'connected':
 			if data == 'switch':
 				self.player.turn = 1
+			elif data == 'quit':
+				self.player.state = 'quit'
 
 	def switchTurn(self):
 		self.transport.write('T')
@@ -113,6 +114,8 @@ class Gamespace:
 					break
 				
 				elif event.type == QUIT:
+					pygame.display.quit()
+					pygame.quit()
 					sys.exit()
 		
 
@@ -175,8 +178,10 @@ class Gamespace:
 		self.CFactory = commandConnFactory(self.player)
 		reactor.connectTCP('student02.cse.nd.edu', 40020, self.CFactory)
 		lc = LoopingCall(self.gameloop)		
-		lc.start(1)
+		lc.start(.5)
 		reactor.run()
+		sys.exit()
+		return
 
 
 	def gameloop(self):
@@ -194,6 +199,12 @@ class Gamespace:
 		
 			if self.player.turn == 0:
 				self.screen.blit(self.oppturn, self.oppturnRect)
+				events = pygame.event.get()
+				for e in events:
+					if e.type == QUIT:
+						reactor.stop()
+						#sys.exit()
+						return
 			else:
 				self.screen.blit(self.yourturn, self.yourturnRect)
 				
@@ -219,14 +230,25 @@ class Gamespace:
 							break;
 
 					if e.type == QUIT:
-						sys.exit()
+						reactor.stop()
+						#sys.exit()
+						return
 
 				if self.player.turn == 0:
 					self.CFactory.CPro.switchTurn()
 
-						
-
+		elif self.player.state == 'quit':
+			self.screen.fill(self.black)
+			title = self.myfont.render("Opponent Forfeited. YOU WIN!", 1, (255,255,255))
+			self.screen.blit(title, (50,200))
 			pygame.display.flip()
+			time.sleep(7)
+			reactor.stop()
+			#sys.exit()
+			return
+			
+
+		pygame.display.flip()
 			
 
 			
@@ -240,4 +262,5 @@ class Gamespace:
 if __name__ == '__main__':
 	g = Gamespace()	
 	g.main()
+	
 
