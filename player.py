@@ -21,6 +21,7 @@ class Player:
    		self.eCreature = None
 		self.id = None		# id is index of server protocol list
 		self.state = 'start'
+		self.turn = None	# second player to connect gets first turn
 
 	def tick(self):
 		return
@@ -36,17 +37,26 @@ class commandConnProtocol(Protocol):
 		return
 
 	def dataReceived(self, data):
-		
+		print str(data)
 		if self.state == 'start':
 			if data == 'Opponent Connected':
 				self.player.state = 'connected'
+				self.state = 'connected'
 			elif data == '0':
 				self.player.id = data
+				self.player.turn = 1
 			elif data == '1':
 				self.player.id = data
 				self.player.state = 'connected'
+				self.state = 'connected'
+				self.player.turn = 0
 
-		#elif state == 'connected':
+		elif self.state == 'connected':
+			if data == 'switch':
+				self.player.turn = 1
+
+	def switchTurn(self):
+		self.transport.write('T')
 			
 
 
@@ -71,8 +81,16 @@ class Gamespace:
 		self.size = self.width, self.height = 640, 480
 		self.black = 0, 0, 0
 		self.screen = pygame.display.set_mode(self.size)
+
+		# initialize backgrounds / images
 		self.arenabackground = pygame.image.load('battlearena.png')
 		self.arenaRect = self.arenabackground.get_rect()
+		self.oppturn = pygame.image.load('oppturn.png')
+		self.oppturnRect = self.oppturn.get_rect()
+		self.oppturnRect.y = 200
+		self.yourturn = pygame.image.load('yourturn.png')
+		self.yourturnRect = self.yourturn.get_rect()
+		self.yourturnRect.y = 344
 		
 
 		# Title Screen
@@ -162,15 +180,52 @@ class Gamespace:
 
 
 	def gameloop(self):
-		if self.player.state == "connected":
-			self.state = 'connected'
 
 		# Check if other player is connected.
 		# If connected, start battle mode
-		if self.state == 'connected':
-			# placeholder for actual tick events
+		if self.player.state == 'connected':
+
+			self.screen.fill(self.black)
 			self.screen.blit(self.arenabackground, self.arenaRect)
+
+			# display creatures
+
 			self.screen.blit(self.bar, self.barRect)
+		
+			if self.player.turn == 0:
+				self.screen.blit(self.oppturn, self.oppturnRect)
+			else:
+				self.screen.blit(self.yourturn, self.yourturnRect)
+				
+				events = pygame.event.get()
+				for e in events:
+					if e.type == MOUSEBUTTONDOWN:
+						mx, my = pygame.mouse.get_pos()	
+						
+						if mx < 320 and my > 372 and my < 425.5:
+							self.player.turn = 0
+							print "Attack!"
+						elif mx < 320 and my > 426 and my < 479.5:
+							self.player.turn = 0
+							print "Ultimate Attack!"
+						elif mx > 339 and mx < 474.7 and my > 427.49 and my < 480:							
+							self.player.turn = 0
+							print 'Forwards!'
+						elif mx > 477.5 and my > 427.49:
+							self.player.turn = 0
+							print 'Backwards!'
+			
+						if self.player.turn == 0:
+							break;
+
+					if e.type == QUIT:
+						sys.exit()
+
+				if self.player.turn == 0:
+					self.CFactory.CPro.switchTurn()
+
+						
+
 			pygame.display.flip()
 			
 
