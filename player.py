@@ -211,6 +211,7 @@ class Gamespace:
 				events = pygame.event.get()
 				for e in events:
 					if e.type == MOUSEBUTTONDOWN:
+						# Check which move is selected
 						mx, my = pygame.mouse.get_pos()	
 						
 						if mx < 320 and my > 372 and my < 425.5:
