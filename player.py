@@ -230,6 +230,7 @@ class Gamespace:
 	def gameloop(self):
 
 		self.oType = self.myfont2.render(self.player.oid, 1, (250, 250, 250))
+		mp = 0
 
 		if self.player.state == 'battle':
 			# display background
@@ -246,11 +247,11 @@ class Gamespace:
 			self.displayStats()
 			self.screen.blit(self.bar, self.barRect)
 			
-			# Check if gameove
+			# Check if gameover
 			if self.player.creature.currentHealth <= 0 or self.player.ecreature.currentHealth <=0:
 				self.player.state = 'gameover'
 		
-			# Check turn and process input based on turnselectio
+			# Check turn and process input based on turnselection
 			elif self.player.turn == 0:
 				self.screen.blit(self.oppturn, self.oppturnRect)
 				events = pygame.event.get()
@@ -273,10 +274,18 @@ class Gamespace:
 							self.player.creature.primary(self.player.ecreature, self.screen)
 							self.CFactory.CPro.transport.write('primary')
 						elif mx < 320 and my > 426 and my < 479.5:
-							self.player.turn = 0
-							self.player.creature.ultimate(self.player.ecreature, self.screen)
-							self.CFactory.CPro.transport.write('ultimate')
+							if self.player.creature.MP >= 100:
+								self.player.turn = 0
+								self.player.creature.ultimate(self.player.ecreature, self.screen)
+								self.CFactory.CPro.transport.write('ultimate')
+							else:
+								text = self.myfont.render("MP needs to be > 100", 1, (0,0,0))
+								self.screen.blit(title, (50,200))
+								mp = 1
+								break
+								
 						elif mx > 339 and mx < 474.7 and my > 427.49 and my < 480:				
+					
 							self.player.turn = 0
 							self.player.creature.move("right")
 							self.CFactory.CPro.transport.write('right')
@@ -312,7 +321,7 @@ class Gamespace:
 			self.screen.blit(self.cType, (133,21))
 			self.screen.blit(self.oType, (395,21))
 
-			# display creatures HERE
+			# display creatures here
 			self.screen.blit(self.player.creature.image, self.player.creature.rect)
 			self.screen.blit(self.player.ecreature.image, self.player.ecreature.rect)
 			
@@ -333,13 +342,16 @@ class Gamespace:
 			
 
 		pygame.display.flip()
+		if mp == 1:
+			sleep(2)
 			
 
 	# Function to Display Battle Stats
 	def displayStats(self):
 		h = str(int(self.player.creature.currentHealth)) + "/" + str(self.player.creature.health)
 		Health = self.myfont3.render(str(h), 1, (250,250,250))
-		MP = self.myfont3.render(str(self.player.creature.MP), 1, (250,250,250))
+		mp = str(self.player.creature.MP) + "/100"
+		MP = self.myfont3.render(mp, 1, (250,250,250))
 		Attack = self.myfont3.render(str(self.player.creature.Attack), 1, (250,250,250))
 		Defense = self.myfont3.render(str(self.player.creature.Defense), 1, (250,250,250))
 		self.screen.blit(Health, (140, 42))
