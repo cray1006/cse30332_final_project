@@ -2,7 +2,6 @@
 # Creature Battler - Final Project
 # creature.py
 
-# Placeholder values! feel free to change
 
 import sys, pygame, math, time, os
 from pygame.locals import *
@@ -16,7 +15,7 @@ class fireball(pygame.sprite.Sprite):
 			self.image = pygame.transform.flip(self.image, 1, 0)
 
 		self.rect = self.image.get_rect()
-		self.rex.x = x
+		self.rect.x = x
 		self.rect.y = y
 		color = self.image.get_at((0,0))
 		self.image.set_colorkey(color)
@@ -38,7 +37,7 @@ class pyro(pygame.sprite.Sprite):
 			self.image = pygame.transform.flip(self.image, 1, 0)
 
 		self.rect = self.image.get_rect()
-		self.rex.x = x
+		self.rect.x = x
 		self.rect.y = y
 		color = self.image.get_at((0,0))
 		self.image.set_colorkey(color)
@@ -59,7 +58,7 @@ class ice(pygame.sprite.Sprite):
 			self.image = pygame.transform.flip(self.image, 1, 0)
 
 		self.rect = self.image.get_rect()
-		self.rex.x = x
+		self.rect.x = x
 		self.rect.y = y
 		color = self.image.get_at((0,0))
 		self.image.set_colorkey(color)
@@ -81,7 +80,7 @@ class freeze(pygame.sprite.Sprite):
 			self.image = pygame.transform.flip(self.image, 1, 0)
 
 		self.rect = self.image.get_rect()
-		self.rex.x = x
+		self.rect.x = x
 		self.rect.y = y
 		color = self.image.get_at((0,0))
 		self.image.set_colorkey(color)
@@ -103,7 +102,7 @@ class vine(pygame.sprite.Sprite):
 			self.image = pygame.transform.flip(self.image, 1, 0)
 
 		self.rect = self.image.get_rect()
-		self.rex.x = x
+		self.rect.x = x
 		self.rect.y = y
 		color = self.image.get_at((0,0))
 		self.image.set_colorkey(color)
@@ -125,7 +124,7 @@ class giga(pygame.sprite.Sprite):
 			self.image = pygame.transform.flip(self.image, 1, 0)
 
 		self.rect = self.image.get_rect()
-		self.rex.x = x
+		self.rect.x = x
 		self.rect.y = y
 		color = self.image.get_at((0,0))
 		self.image.set_colorkey(color)
@@ -147,11 +146,11 @@ class Water(pygame.sprite.Sprite):
 		self.MP = 100
 		self.Attack = 0.1
 		self.Defense = 2
-		self.move = 1
 		self.state = "normal"	#"normal", "frozen", or "drain"
 		self.frozen = 0
 		self.drain = 0
 		self.player = player
+		self.idle = 0
 
 		if(self.player == 0):
 			self.image = pygame.image.load('water_back.png')
@@ -176,13 +175,13 @@ class Water(pygame.sprite.Sprite):
 					self.rect = self.rect.move(100, 0)
 			else:
 				if((direction == "left") and (self.rect.x > 350)):
-					self.rect = self.rect.move(-100, 0)
-				elif((direction == "right") and (self.rect.x < 550)):
 					self.rect = self.rect.move(100, 0)
+				elif((direction == "right") and (self.rect.x < 550)):
+					self.rect = self.rect.move(-100, 0)
 
 	def is_hit(self, attack, damage):
 		if((attack == "primary") or (attack == "pyro")):
-			self.health -= (damage - (10 / self.Defense))
+			self.currentHealth -= (damage - (10 / self.Defense))
 		elif(attack == "freeze"):
 			self.state = "frozen"
 			self.frozen = 0
@@ -191,21 +190,22 @@ class Water(pygame.sprite.Sprite):
 			self.drain = 0
 
 	def primary(self, enemy, screen):
-		cast = pygame.mixer.Sound('./music/ice_cast.ogg')
-		hit = pygame.mixer.Sound('./music/ice_hit.ogg')
-		cast.play()
-		lance = ice(self.player, self.rect.centerx, self.rect.centery, self.gs)
-		base = 10
-		damage = base + (base * self.Attack)
-		i = 0
-		while(i < 3):
-			lance.move()
-			screen.blit(lance.image, lance.rect)
-			pygame.display.flip()
-			if(pygame.sprite.collide_rect(lance, enemy)):
-				hit.play()
-				enemy.is_hit("primary", damage)
-				break
+		if(self.state != "frozen"):
+			cast = pygame.mixer.Sound('./music/ice_cast.ogg')
+			hit = pygame.mixer.Sound('./music/ice_hit.ogg')
+			cast.play()
+			lance = ice(self.player, self.rect.centerx, self.rect.centery, self.gs)
+			base = 10
+			damage = base + (base * self.Attack)
+			i = 0
+			while(i < 3):
+				lance.move()
+				screen.blit(lance.image, lance.rect)
+				pygame.display.flip()
+				if(pygame.sprite.collide_rect(lance, enemy)):
+					hit.play()
+					enemy.is_hit("primary", damage)
+					break
 
 	def ultimate(self, enemy, screen):
 		if((self.MP >= 50) and (self.state != "frozen")):
@@ -230,12 +230,12 @@ class Water(pygame.sprite.Sprite):
 		drain_sound = pygame.mixer.Sound('./music/drain_sound.ogg')
 		freeze_sound = pygame.mixer.Sound('./music/freeze.ogg')
 		if(self.state == "drain"):
-			self.health -= 10
-			if(enemy.health < 200):
-				enemy.health += 10
+			self.currentHealth -= 10
+			if(enemy.currentHealth < 200):
+				enemy.currentHealth += 10
 
-				if(enemy.health >= 200):
-					enemy.health = 200
+				if(enemy.currentHealth >= 200):
+					enemy.currentHealth = 200
 
 			if(self.drain < 3):
 				drain_sound.play()
@@ -257,17 +257,17 @@ class Water(pygame.sprite.Sprite):
 			else:
 				self.state = "normal"
 
-		if(self.idle == 0)
-			self.rect = self.rect.move(0, 25)
+		if(self.idle == 0):
+			self.rect = self.rect.move(0, 5)
 			self.idle  = 1
 		elif(self.idle == 1):
-			self.rect = self.rect.move(0, -25)
+			self.rect = self.rect.move(0, -5)
 			self.idle = 2
 		elif(self.idle == 2):
-			self.rect = self.rect.move(0, -25)
+			self.rect = self.rect.move(0, -5)
 			self.idle = 3
 		elif(self.idle == 3):
-			self.rect = self.rect.move(0, 25)
+			self.rect = self.rect.move(0, 5)
 			self.idle = 0
 
 				
@@ -279,12 +279,11 @@ class Fire(pygame.sprite.Sprite):
 		self.MP = 100
 		self.Attack = .5
 		self.Defense = 1.5
-		self.move = 2
 		self.state = "normal"
 		self.player = player
 		self.frozen = 0
 		self.drain = 0
-		self.idle = 
+		self.idle = 0
 
 		if(self.player == 0):
 			self.image = pygame.image.load('fire_back.png')
@@ -309,13 +308,13 @@ class Fire(pygame.sprite.Sprite):
 					self.rect = self.rect.move(100, 0)
 			else:
 				if((direction == "left") and (self.rect.x > 350)):
-					self.rect = self.rect.move(-100, 0)
-				elif((direction == "right") and (self.rect.x < 550)):
 					self.rect = self.rect.move(100, 0)
+				elif((direction == "right") and (self.rect.x < 550)):
+					self.rect = self.rect.move(-100, 0)
 
 	def is_hit(self, attack, damage):
 		if((attack == "primary") or (attack == "pyro")):
-			self.health -= (damage - (10 / self.Defense))
+			self.currentHealth -= (damage - (10 / self.Defense))
 		elif(attack == "freeze"):
 			self.state = "frozen"
 			self.frozen = 0
@@ -357,19 +356,19 @@ class Fire(pygame.sprite.Sprite):
 				pygame.display.flip()
 				if(pygame.sprite.collide_rect(pb, enemy)):
 					hit.play()
-					enemy.is_hit("pyro")
+					enemy.is_hit("pyro", damage)
 					break
 				
 	def update(self, enemy):
 		drain_sound = pygame.mixer.Sound('./music/drain_sound.ogg')
 		freeze_sound = pygame.mixer.Sound('./music/freeze.ogg')
 		if(self.state == "drain"):
-			self.health -= 10
-			if(enemy.health < 200):
-				enemy.health += 10
+			self.currentHealth -= 10
+			if(enemy.curentHealth < 200):
+				enemy.currentHealth += 10
 
-				if(enemy.health >= 200):
-					enemy.health = 200
+				if(enemy.curentHealth >= 200):
+					enemy.currentHealth = 200
 
 			if(self.drain < 3):
 				drain_sound.play()
@@ -391,17 +390,17 @@ class Fire(pygame.sprite.Sprite):
 			else:
 				self.state = "normal"
 
-		if(self.idle == 0)
-			self.rect = self.rect.move(0, 25)
+		if(self.idle == 0):
+			self.rect = self.rect.move(0, 5)
 			self.idle  = 1
 		elif(self.idle == 1):
-			self.rect = self.rect.move(0, -25)
+			self.rect = self.rect.move(0, -5)
 			self.idle = 2
 		elif(self.idle == 2):
-			self.rect = self.rect.move(0, -25)
+			self.rect = self.rect.move(0, -5)
 			self.idle = 3
 		elif(self.idle == 3):
-			self.rect = self.rect.move(0, 25)
+			self.rect = self.rect.move(0, 5)
 			self.idle = 0
 
 
@@ -409,11 +408,10 @@ class Grass(pygame.sprite.Sprite):
 	def __init__(self, player, gs = None):
 		self.gs = gs
 		self.health = 200
-		self.currentHealth = 100
+		self.currentHealth = 200
 		self.MP = 100
 		self.Attack = 1
 		self.Defense = 1
-		self.move = 2
 		self.state = "normal"
 		self.player = player
 		self.frozen = 0
@@ -443,13 +441,13 @@ class Grass(pygame.sprite.Sprite):
 					self.rect = self.rect.move(100, 0)
 			else:
 				if((direction == "left") and (self.rect.x > 350)):
-					self.rect = self.rect.move(-100, 0)
-				elif((direction == "right") and (self.rect.x < 550)):
 					self.rect = self.rect.move(100, 0)
+				elif((direction == "right") and (self.rect.x < 550)):
+					self.rect = self.rect.move(-cur100, 0)
 
 	def is_hit(self, attack, damage):
 		if((attack == "primary") or (attack == "pyro")):
-			self.health -= (damage - (10 / self.Defense))
+			self.currentHealth -= (damage - (10 / self.Defense))
 		elif(attack == "freeze"):
 			self.state = "frozen"
 			self.frozen = 0
@@ -491,19 +489,19 @@ class Grass(pygame.sprite.Sprite):
 				pygame.display.flip()
 				if(pygame.sprite.collide_rect(gd, enemy)):
 					hit.play()
-					enemy.is_hit("giga")
+					enemy.is_hit("giga", damage)
 					break
 				
 	def update(self, enemy):
 		drain_sound = pygame.mixer.Sound('./music/drain_sound.ogg')
 		freeze_sound = pygame.mixer.Sound('./music/freeze.ogg')
 		if(self.state == "drain"):
-			self.health -= 10
-			if(enemy.health < 200):
-				enemy.health += 10
+			self.currentHealth -= 10
+			if(enemy.currentHealth < 200):
+				enemy.currentHealth += 10
 
-				if(enemy.health >= 200):
-					enemy.health = 200
+				if(enemy.currentHealth >= 200):
+					enemy.curentHealth = 200
 
 			if(self.drain < 3):
 				drain_sound.play()
@@ -525,15 +523,15 @@ class Grass(pygame.sprite.Sprite):
 			else:
 				self.state = "normal"
 
-		if(self.idle == 0)
-			self.rect = self.rect.move(0, 25)
+		if(self.idle == 0):
+			self.rect = self.rect.move(0, 5)
 			self.idle  = 1
 		elif(self.idle == 1):
-			self.rect = self.rect.move(0, -25)
+			self.rect = self.rect.move(0, -5)
 			self.idle = 2
 		elif(self.idle == 2):
-			self.rect = self.rect.move(0, -25)
+			self.rect = self.rect.move(0, -5)
 			self.idle = 3
 		elif(self.idle == 3):
-			self.rect = self.rect.move(0, 25)
+			self.rect = self.rect.move(0, 5)
 			self.idle = 0

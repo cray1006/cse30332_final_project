@@ -146,11 +146,11 @@ class Water(pygame.sprite.Sprite):
 		self.MP = 100
 		self.Attack = 0.1
 		self.Defense = 2
-		#self.move = 1
 		self.state = "normal"	#"normal", "frozen", or "drain"
 		self.frozen = 0
 		self.drain = 0
 		self.player = player
+		self.idle = 0
 
 		if(self.player == 0):
 			self.image = pygame.image.load('water_back.png')
@@ -223,7 +223,7 @@ class Water(pygame.sprite.Sprite):
 				pygame.display.flip()
 				if(pygame.sprite.collide_rect(f, enemy)):
 					hit.play()
-					enemy.is_hit("freeze")
+					enemy.is_hit("freeze", damage)
 					break
 				
 	def update(self, enemy):
@@ -243,7 +243,7 @@ class Water(pygame.sprite.Sprite):
 			else:
 				self.state = "normal"
 
-		#self.currentHealth = self.health
+		self.currentHealth = self.health
 
 		if(self.MP < 100):
 			self.MP += 25
@@ -257,17 +257,17 @@ class Water(pygame.sprite.Sprite):
 			else:
 				self.state = "normal"
 
-		if(self.idle == 0)
-			self.rect = self.rect.move(0, 25)
+		if(self.idle == 0):
+			self.rect = self.rect.move(0, 5)
 			self.idle  = 1
 		elif(self.idle == 1):
-			self.rect = self.rect.move(0, -25)
+			self.rect = self.rect.move(0, -5)
 			self.idle = 2
 		elif(self.idle == 2):
-			self.rect = self.rect.move(0, -25)
+			self.rect = self.rect.move(0, -5)
 			self.idle = 3
 		elif(self.idle == 3):
-			self.rect = self.rect.move(0, 25)
+			self.rect = self.rect.move(0, 5)
 			self.idle = 0
 
 				
@@ -279,12 +279,11 @@ class Fire(pygame.sprite.Sprite):
 		self.MP = 100
 		self.Attack = .5
 		self.Defense = 1.5
-		#self.move = 2
 		self.state = "normal"
 		self.player = player
 		self.frozen = 0
 		self.drain = 0
-		self.idle = 
+		self.idle = 0
 
 		if(self.player == 0):
 			self.image = pygame.image.load('fire_back.png')
@@ -357,7 +356,7 @@ class Fire(pygame.sprite.Sprite):
 				pygame.display.flip()
 				if(pygame.sprite.collide_rect(pb, enemy)):
 					hit.play()
-					enemy.is_hit("pyro")
+					enemy.is_hit("pyro", damage)
 					break
 				
 	def update(self, enemy):
@@ -377,7 +376,7 @@ class Fire(pygame.sprite.Sprite):
 			else:
 				self.state = "normal"
 
-		#self.currentHealth = self.health
+		self.currentHealth = self.health
 
 		if(self.MP < 100):
 			self.MP += 25
@@ -391,17 +390,17 @@ class Fire(pygame.sprite.Sprite):
 			else:
 				self.state = "normal"
 
-		if(self.idle == 0)
-			self.rect = self.rect.move(0, 25)
+		if(self.idle == 0):
+			self.rect = self.rect.move(0, 5)
 			self.idle  = 1
 		elif(self.idle == 1):
-			self.rect = self.rect.move(0, -25)
+			self.rect = self.rect.move(0, -5)
 			self.idle = 2
 		elif(self.idle == 2):
-			self.rect = self.rect.move(0, -25)
+			self.rect = self.rect.move(0, -5)
 			self.idle = 3
 		elif(self.idle == 3):
-			self.rect = self.rect.move(0, 25)
+			self.rect = self.rect.move(0, 5)
 			self.idle = 0
 
 
@@ -413,7 +412,6 @@ class Grass(pygame.sprite.Sprite):
 		self.MP = 100
 		self.Attack = 1
 		self.Defense = 1
-		#self.move = 2
 		self.state = "normal"
 		self.player = player
 		self.frozen = 0
@@ -491,7 +489,7 @@ class Grass(pygame.sprite.Sprite):
 				pygame.display.flip()
 				if(pygame.sprite.collide_rect(gd, enemy)):
 					hit.play()
-					enemy.is_hit("giga")
+					enemy.is_hit("giga", damage)
 					break
 				
 	def update(self, enemy):
@@ -511,7 +509,7 @@ class Grass(pygame.sprite.Sprite):
 			else:
 				self.state = "normal"
 
-		#self.currentHealth = self.health
+		self.currentHealth = self.health
 
 		if(self.MP < 100):
 			self.MP += 25
@@ -525,15 +523,15 @@ class Grass(pygame.sprite.Sprite):
 			else:
 				self.state = "normal"
 
-		if(self.idle == 0)
-			self.rect = self.rect.move(0, 25)
+		if(self.idle == 0):
+			self.rect = self.rect.move(0, 5)
 			self.idle  = 1
 		elif(self.idle == 1):
-			self.rect = self.rect.move(0, -25)
+			self.rect = self.rect.move(0, -5)
 			self.idle = 2
 		elif(self.idle == 2):
-			self.rect = self.rect.move(0, -25)
+			self.rect = self.rect.move(0, -5)
 			self.idle = 3
 		elif(self.idle == 3):
-			self.rect = self.rect.move(0, 25)
+			self.rect = self.rect.move(0, 5)
 			self.idle = 0
