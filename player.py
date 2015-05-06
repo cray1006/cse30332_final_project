@@ -341,14 +341,6 @@ class Gamespace:
 		self.screen.blit(Defense, (543,66))
 			
 		
-			
-
-		
-		
-
-
 if __name__ == '__main__':
 	g = Gamespace()	
 	g.main()
-	
-

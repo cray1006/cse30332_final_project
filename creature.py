@@ -152,6 +152,7 @@ class Water(pygame.sprite.Sprite):
 		self.frozen = 0
 		self.drain = 0
 		self.player = player
+		self.idle = 0
 
 		if(self.player == 0):
 			self.image = pygame.image.load('water_back.png')
@@ -208,26 +209,6 @@ class Water(pygame.sprite.Sprite):
 				break
 
 	def ultimate(self, enemy, screen):
-		if(self.MP >= 50):
-			cast = pygame.mixer.Sound('./music/ice_cast.ogg')
-			hit = pygame.mixer.Sound('./music/ice_hit.ogg')
-			cast.play()
-			self.MP -= 50
-			f = freeze(self.player, self.rect.centerx, self.rect.centery, self.gs)
-			base = 0
-			damage = base + (base * self.Attack)
-			i = 0
-			while(i < 2):
-				f.move()
-				screen.blit(f.image, f.rect)
-				pygame.display.flip()
-				if(pygame.sprite.collide_rect(f, enemy)):
-					hit.play()
-					enemy.is_hit("freeze")
-					break
-				
-	def update(self, enemy):
-		def update(self, enemy):
 		drain_sound = pygame.mixer.Sound('./music/drain_sound.ogg')
 		freeze_sound = pygame.mixer.Sound('./music/freeze.ogg')
 		if(self.state == "drain"):
@@ -258,6 +239,19 @@ class Water(pygame.sprite.Sprite):
 			else:
 				self.state = "normal"
 
+		if(self.idle == 0)
+			self.rect = self.rect.move(0, 25)
+			self.idle  = 1
+		elif(self.idle == 1):
+			self.rect = self.rect.move(0, -25)
+			self.idle = 2
+		elif(self.idle == 2):
+			self.rect = self.rect.move(0, -25)
+			self.idle = 3
+		elif(self.idle == 3):
+			self.rect = self.rect.move(0, 25)
+			self.idle = 0
+
 				
 class Fire(pygame.sprite.Sprite):
 	def __init__(self, player, gs = None):
@@ -272,6 +266,7 @@ class Fire(pygame.sprite.Sprite):
 		self.player = player
 		self.frozen = 0
 		self.drain = 0
+		self.idle = 0
 
 		if(self.player == 0):
 			self.image = pygame.image.load('fire_back.png')
@@ -377,6 +372,19 @@ class Fire(pygame.sprite.Sprite):
 			else:
 				self.state = "normal"
 
+		if(self.idle == 0)
+			self.rect = self.rect.move(0, 25)
+			self.idle  = 1
+		elif(self.idle == 1):
+			self.rect = self.rect.move(0, -25)
+			self.idle = 2
+		elif(self.idle == 2):
+			self.rect = self.rect.move(0, -25)
+			self.idle = 3
+		elif(self.idle == 3):
+			self.rect = self.rect.move(0, 25)
+			self.idle = 0
+
 
 class Grass(pygame.sprite.Sprite):
 	def __init__(self, player, gs = None):
@@ -391,6 +399,7 @@ class Grass(pygame.sprite.Sprite):
 		self.player = player
 		self.frozen = 0
 		self.drain = 0
+		self.idle = 0
 
 		if(self.player == 0):
 			self.image = pygame.image.load('grass_back.png')
@@ -495,3 +504,16 @@ class Grass(pygame.sprite.Sprite):
 				self.frozen += 1
 			else:
 				self.state = "normal"
+
+		if(self.idle == 0)
+			self.rect = self.rect.move(0, 25)
+			self.idle  = 1
+		elif(self.idle == 1):
+			self.rect = self.rect.move(0, -25)
+			self.idle = 2
+		elif(self.idle == 2):
+			self.rect = self.rect.move(0, -25)
+			self.idle = 3
+		elif(self.idle == 3):
+			self.rect = self.rect.move(0, 25)
+			self.idle = 0
