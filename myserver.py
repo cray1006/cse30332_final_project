@@ -58,7 +58,7 @@ class serverProtocol(LineReceiver):
 			self.F.players[0].transport.write('quit')
 
 		self.F.players[self.id] = None
-		self.F.count = 0
+		self.F.count = -1
 		
 		
 
