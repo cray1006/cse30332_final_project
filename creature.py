@@ -248,7 +248,7 @@ class Water(pygame.sprite.Sprite):
 			if(self.MP <= 0):
 				self.recharge = 1
 			
-			if(self.recharge == 1)
+			if(self.recharge == 1):
 				self.MP += 25
 				if(self.MP >= 100):
 					self.MP = 100
@@ -385,7 +385,7 @@ class Fire(pygame.sprite.Sprite):
 			if(self.MP <= 0):
 				self.recharge = 1
 			
-			if(self.recharge == 1)
+			if(self.recharge == 1):
 				self.MP += 25
 				if(self.MP >= 100):
 					self.MP = 100
@@ -523,7 +523,7 @@ class Grass(pygame.sprite.Sprite):
 			if(self.MP <= 0):
 				self.recharge = 1
 			
-			if(self.recharge == 1)
+			if(self.recharge == 1):
 				self.MP += 25
 				if(self.MP >= 100):
 					self.MP = 100
