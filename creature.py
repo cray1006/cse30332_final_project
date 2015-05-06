@@ -3,8 +3,13 @@
 # creature.py
 
 
+
+
+
+# Placeholder values! feel free to change
+
 class Water:
-	def __init__:
+	def __init__(self):
 		self.health = 100
 		self.currentHealth = 100
 		self.MP = 100
@@ -14,7 +19,7 @@ class Water:
 		return
 
 class Fire:
-	def __init__:
+	def __init__(self):
 		self.health = 100
 		self.currentHealth = 100
 		self.MP = 100
@@ -24,7 +29,7 @@ class Fire:
 		return
 
 class Grass:
-	def __init__:
+	def __init__(self):
 		self.health = 100
 		self.currentHealth = 100
 		self.MP = 100
