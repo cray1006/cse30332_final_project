@@ -5,27 +5,30 @@
 
 class Water:
 	def __init__:
-		self.health = 
-		self.MP = 
-		self.Attack =
-		self.Defense =
-		self.image = 
+		self.health = 100
+		self.currentHealth = 100
+		self.MP = 100
+		self.Attack = 100
+		self.Defense = 100
+		self.image = None
 		return
 
 class Fire:
 	def __init__:
-		self.health = 
-		self.MP = 
-		self.Attack =
-		self.Defense =
-		self.image = 
+		self.health = 100
+		self.currentHealth = 100
+		self.MP = 100
+		self.Attack = 100
+		self.Defense = 100
+		self.image = None
 		return
 
 class Grass:
 	def __init__:
-		self.health = 
-		self.MP = 
-		self.Attack =
-		self.Defense =
-		self.image = 
+		self.health = 100
+		self.currentHealth = 100
+		self.MP = 100
+		self.Attack = 100
+		self.Defense = 100
+		self.image = None
 		return
