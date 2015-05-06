@@ -56,11 +56,11 @@ class commandConnProtocol(Protocol):
 			print "Opponent type is " + data
 			self.player.oid = str(data)
 			if data == 'Water':
-				self.player.ecreature = creature.Water()
+				self.player.ecreature = creature.Water(1)
 			elif data == 'Grass':
-				self.player.ecreature = creature.Grass()
+				self.player.ecreature = creature.Grass(1)
 			elif data == 'Fire':
-				self.player.ecreature = creature.Fire()
+				self.player.ecreature = creature.Fire(1)
 			self.state = 'battle'
 			self.player.state = 'battle'
 
@@ -155,7 +155,7 @@ class Gamespace:
 					if mx < 205:
 						print "GRASS CREATURE SELECTED!"		
 						self.player = Player('Grass')
-						self.player.creature = creature.Grass()
+						self.player.creature = creature.Grass(0)
 						self.bar = pygame.image.load('grassbar.png')
 						self.barRect = self.bar.get_rect()
 						self.barRect.y = 372
@@ -164,7 +164,7 @@ class Gamespace:
 					elif mx < 442:
 						print "WATER CREATURE SELECTED!"		
 						self.player = Player('Water')
-						self.player.creature = creature.Water()
+						self.player.creature = creature.Water(0)
 						self.bar = pygame.image.load('waterbar.png')
 						self.barRect = self.bar.get_rect()
 						self.barRect.y = 372
@@ -173,7 +173,7 @@ class Gamespace:
 					elif mx < 640:
 						print "FIRE CREATURE SELECTED!"		
 						self.player = Player('Fire')
-						self.player.creature = creature.Fire()
+						self.player.creature = creature.Fire(0)
 						self.bar = pygame.image.load('firebar.png')
 						self.barRect = self.bar.get_rect()
 						self.barRect.y = 372
@@ -222,15 +222,17 @@ class Gamespace:
 			self.screen.blit(self.oType, (395,21))
 
 			# display creatures HERE
-
+			self.screen.blit(self.player.creature.image, self.player.creature.rect)
+			self.screen.blit(self.player.ecreature.image, self.player.ecreature.rect)
 			########################
 			
 			self.displayStats()
-			
-
 			self.screen.blit(self.bar, self.barRect)
+			
+			if self,player.creature.currentHealth <= 0 or self.player.ecreature.currentHealth <=0:
+				self.player.state = 'gameover'
 		
-			if self.player.turn == 0:
+			elif self.player.turn == 0:
 				self.screen.blit(self.oppturn, self.oppturnRect)
 				events = pygame.event.get()
 				for e in events:
@@ -274,7 +276,33 @@ class Gamespace:
 			title = self.myfont.render("Opponent Forfeited. YOU WIN!", 1, (255,255,255))
 			self.screen.blit(title, (50,200))
 			pygame.display.flip()
-			time.sleep(7)
+			time.sleep(4)
+			reactor.stop()
+			return
+
+		# Game stops and exits after a player wins
+		elif self.player.state == 'gameover':
+			self.screen.fill(self.black)
+			self.screen.blit(self.arenabackground, self.arenaRect)
+			self.screen.blit(self.cType, (133,21))
+			self.screen.blit(self.oType, (395,21))
+
+			# display creatures HERE
+			self.screen.blit(self.player.creature.image, self.player.creature.rect)
+			self.screen.blit(self.player.ecreature.image, self.player.ecreature.rect)
+			########################
+			
+			self.displayStats()	
+
+			if self.player.creature.currentHealth > self.player.ecreature.currentHealth:
+				title = self.myfont.render("Congratulations! YOU WIN!", 1, (255,255,255))
+			else:
+				title = self.myfont.render("Better luck next time!", 1, (255,255,255))
+
+			self.screen.blit(title, (50,200))
+			self.screen.blit(self.bar, self.barRect)
+			pygame.display.flip()
+			time.sleep(4)
 			reactor.stop()
 			return
 			

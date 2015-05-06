@@ -155,13 +155,13 @@ class Water(pygame.sprite.Sprite):
 		if(self.player == 0):
 			self.image = pygame.image.load('water_back.png')
 			self.rect = self.image.get_rect()
-			self.rect.x = 200
-			self.rect.y = 221
+			self.rect.x = 90
+			self.rect.y = 177
 		else:
 			self.image = pygame.image.load('water_front.png')
 			self.rect = self.image.get_rect()
-			self.rect.x = 450
-			self.rect.y = 221
+			self.rect.x = 470
+			self.rect.y = 177
 		
 		color = self.image.get_at((0,0))
 		self.image.set_colorkey(color)
@@ -263,13 +263,13 @@ class Fire(pygame.sprite.Sprite):
 		if(self.player == 0):
 			self.image = pygame.image.load('fire_back.png')
 			self.rect = self.image.get_rect()
-			self.rect.x = 200
-			self.rect.y = 221
+			self.rect.x = 90
+			self.rect.y = 177
 		else:
 			self.image = pygame.image.load('fire_front.png')
 			self.rect = self.image.get_rect()
-			self.rect.x = 450
-			self.rect.y = 221
+			self.rect.x = 470
+			self.rect.y = 177
 		
 		color = self.image.get_at((0,0))
 		self.image.set_colorkey(color)
@@ -369,13 +369,13 @@ class Grass(pygame.sprite.Sprite):
 		if(self.player == 0):
 			self.image = pygame.image.load('grass_back.png')
 			self.rect = self.image.get_rect()
-			self.rect.x = 200
-			self.rect.y = 221
+			self.rect.x = 90
+			self.rect.y = 177
 		else:
 			self.image = pygame.image.load('grass_front.png')
 			self.rect = self.image.get_rect()
-			self.rect.x = 450
-			self.rect.y = 221
+			self.rect.x = 470
+			self.rect.y = 177
 		
 		color = self.image.get_at((0,0))
 		self.image.set_colorkey(color)

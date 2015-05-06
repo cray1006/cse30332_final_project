@@ -2,6 +2,7 @@
 # Creature Battler - Final Project
 # server.py
 
+import sys
 from twisted.internet.protocol import Factory
 from twisted.protocols.basic import LineReceiver
 from twisted.internet.protocol import Protocol
@@ -57,18 +58,27 @@ class serverProtocol(LineReceiver):
 		else:
 			self.F.players[0].transport.write('quit')
 
+		self.F.players[self.id] = None
+		self.F.count = 0
+		
+		
 
 class serverFactory(Factory):
 	def __init__(self):
-		self.players = []
+		self.players = [None] * 2
+		self.count = 0
 		
 	def buildProtocol(self, addr):
 		s = serverProtocol(self)
-		self.players.append(s)
+		self.players[self.count] = s
+		self.count += 1
 		return s
 
 
+if __name__ == '__main__':
 # Listen at port 40020, for command connection
-sF = serverFactory()
-reactor.listenTCP(40020,sF)
-reactor.run()
+	sF = serverFactory()
+	port = reactor.listenTCP(40020,sF)
+	reactor.run()
+	sys.exit()
+
