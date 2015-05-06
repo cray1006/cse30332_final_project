@@ -280,7 +280,7 @@ class Gamespace:
 								self.CFactory.CPro.transport.write('ultimate')
 							else:
 								text = self.myfont.render("MP needs to be > 100", 1, (0,0,0))
-								self.screen.blit(title, (50,200))
+								self.screen.blit(text, (50,200))
 								mp = 1
 								break
 								
