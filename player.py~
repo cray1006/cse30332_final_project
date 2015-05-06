@@ -253,9 +253,11 @@ class Gamespace:
 						
 						if mx < 320 and my > 372 and my < 425.5:
 							self.player.turn = 0
+							self.player.creature.primary(self.player.ecreature, self.screen)
 							print "Attack!"
 						elif mx < 320 and my > 426 and my < 479.5:
 							self.player.turn = 0
+							self.player.creature.ultimate(self.player.ecreature, self.screen)
 							print "Ultimate Attack!"
 						elif mx > 339 and mx < 474.7 and my > 427.49 and my < 480:							
 							self.player.turn = 0
@@ -270,6 +272,8 @@ class Gamespace:
 					if e.type == QUIT:
 						reactor.stop()
 						return
+
+				self.player.creature.update(self.player.ecreature)
 
 				if self.player.turn == 0:
 					self.CFactory.CPro.switchTurn()

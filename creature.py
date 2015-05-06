@@ -227,6 +227,7 @@ class Water(pygame.sprite.Sprite):
 					break
 				
 	def update(self, enemy):
+		def update(self, enemy):
 		drain_sound = pygame.mixer.Sound('./music/drain_sound.ogg')
 		freeze_sound = pygame.mixer.Sound('./music/freeze.ogg')
 		if(self.state == "drain"):
@@ -243,20 +244,19 @@ class Water(pygame.sprite.Sprite):
 			else:
 				self.state = "normal"
 
-		if(self.health <= 0):
-			return 1
-		else:
-			if(self.MP < 100):
-				self.MP += 25
-				if(self.MP >= 100):
-					self.MP = 100
-			
-			if(self.state == "frozen"):
-				if(self.frozen < 1):
-					freeze_sound.play()
-					self.frozen += 1
-				else:
-					self.state = "normal"
+		self.currentHealth = self.health
+
+		if(self.MP < 100):
+			self.MP += 25
+			if(self.MP >= 100):
+				self.MP = 100
+		
+		if(self.state == "frozen"):
+			if(self.frozen < 1):
+				freeze_sound.play()
+				self.frozen += 1
+			else:
+				self.state = "normal"
 
 				
 class Fire(pygame.sprite.Sprite):
@@ -363,20 +363,20 @@ class Fire(pygame.sprite.Sprite):
 			else:
 				self.state = "normal"
 
-		if(self.health <= 0):
-			return 1
-		else:
-			if(self.MP < 100):
-				self.MP += 25
-				if(self.MP >= 100):
-					self.MP = 100
-			
-			if(self.state == "frozen"):
-				if(self.frozen < 1):
-					freeze_sound.play()
-					self.frozen += 1
-				else:
-					self.state = "normal""
+		self.currentHealth = self.health
+
+		if(self.MP < 100):
+			self.MP += 25
+			if(self.MP >= 100):
+				self.MP = 100
+		
+		if(self.state == "frozen"):
+			if(self.frozen < 1):
+				freeze_sound.play()
+				self.frozen += 1
+			else:
+				self.state = "normal"
+
 
 class Grass(pygame.sprite.Sprite):
 	def __init__(self, player, gs = None):
@@ -482,17 +482,16 @@ class Grass(pygame.sprite.Sprite):
 			else:
 				self.state = "normal"
 
-		if(self.health <= 0):
-			return 1
-		else:
-			if(self.MP < 100):
-				self.MP += 25
-				if(self.MP >= 100):
-					self.MP = 100
-			
-			if(self.state == "frozen"):
-				if(self.frozen < 1):
-					freeze_sound.play()
-					self.frozen += 1
-				else:
-					self.state = "normal"
+		self.currentHealth = self.health
+
+		if(self.MP < 100):
+			self.MP += 25
+			if(self.MP >= 100):
+				self.MP = 100
+		
+		if(self.state == "frozen"):
+			if(self.frozen < 1):
+				freeze_sound.play()
+				self.frozen += 1
+			else:
+				self.state = "normal"
