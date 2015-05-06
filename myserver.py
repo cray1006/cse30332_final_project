@@ -27,12 +27,14 @@ class serverProtocol(Protocol):
 	def dataReceived(self, data):
 		print "Data received from " + str(self.id) + ": " + data
 		if self.state == 'battle':
+			# send opponent's move to other player
 			if self.id == 0:
 				self.F.players[1].transport.write(data)
 			else:
 				self.F.players[0].transport.write(data)
 
 		elif self.state == 'connected':
+			# send the opponent's creature type to other player
 			if data == "Fire" or data == "Water" or data == "Grass":
 				
 				if self.id == 0:
@@ -44,7 +46,6 @@ class serverProtocol(Protocol):
 
 	def connectionLost(self, reason):
 		# if connection is lost, notify other player
-		
 		if self.id == 0 and self.F.players[1] is not None:
 			self.F.players[1].transport.write('quit')
 		elif self.F.players[0] is not None:

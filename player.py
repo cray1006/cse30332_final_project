@@ -161,7 +161,7 @@ class Gamespace:
 		# Set up Player Object
 		self.screen.fill(self.black)
 		select = self.myfont.render("Select a Creature!", 1, (255,255,255))
-		image = pygame.image.load('selection2.png')	
+		image = pygame.image.load('selection.png')	
 		rect = image.get_rect()
 		self.screen.blit(image, rect)
 		self.screen.blit(select, (200, 100))
@@ -232,22 +232,25 @@ class Gamespace:
 		self.oType = self.myfont2.render(self.player.oid, 1, (250, 250, 250))
 
 		if self.player.state == 'battle':
-			
+			# display background
 			self.screen.fill(self.black)
 			self.screen.blit(self.arenabackground, self.arenaRect)
 			self.screen.blit(self.cType, (133,21))
 			self.screen.blit(self.oType, (395,21))
 
-			# display creatures HERE
+			# display creatures here
 			self.screen.blit(self.player.creature.image, self.player.creature.rect)
 			self.screen.blit(self.player.ecreature.image, self.player.ecreature.rect)
 			
+			# display stats and options menu
 			self.displayStats()
 			self.screen.blit(self.bar, self.barRect)
 			
+			# Check if gameove
 			if self.player.creature.currentHealth <= 0 or self.player.ecreature.currentHealth <=0:
 				self.player.state = 'gameover'
 		
+			# Check turn and process input based on turnselectio
 			elif self.player.turn == 0:
 				self.screen.blit(self.oppturn, self.oppturnRect)
 				events = pygame.event.get()
@@ -262,6 +265,7 @@ class Gamespace:
 				for e in events:
 					if e.type == MOUSEBUTTONDOWN:
 						# Check which move is selected
+						# based on mouse position
 						mx, my = pygame.mouse.get_pos()	
 						
 						if mx < 320 and my > 372 and my < 425.5:
@@ -290,6 +294,7 @@ class Gamespace:
 
 				self.player.creature.update(self.player.ecreature)
 
+		# if opponent disconnects
 		elif self.player.state == 'quit':
 			self.screen.fill(self.black)
 			title = self.myfont.render("Opponent Forfeited. YOU WIN!", 1, (255,255,255))
@@ -309,10 +314,10 @@ class Gamespace:
 			# display creatures HERE
 			self.screen.blit(self.player.creature.image, self.player.creature.rect)
 			self.screen.blit(self.player.ecreature.image, self.player.ecreature.rect)
-			########################
 			
 			self.displayStats()	
 
+			# Check who the winner is
 			if self.player.creature.currentHealth > self.player.ecreature.currentHealth:
 				title = self.myfont.render("Congratulations! YOU WIN!", 1, (0,0,0))
 			else:
@@ -329,6 +334,7 @@ class Gamespace:
 		pygame.display.flip()
 			
 
+	# Function to Display Battle Stats
 	def displayStats(self):
 		h = str(int(self.player.creature.currentHealth)) + "/" + str(self.player.creature.health)
 		Health = self.myfont3.render(str(h), 1, (250,250,250))
@@ -351,6 +357,14 @@ class Gamespace:
 		self.screen.blit(Defense, (543,66))
 			
 		
+			
+
+		
+		
+
+
 if __name__ == '__main__':
 	g = Gamespace()	
 	g.main()
+	
+
