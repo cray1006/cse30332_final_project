@@ -16,7 +16,7 @@ import creature
 
 # Player Class
 class Player:
-	def __init__(self, P):
+	def __init__(self, P, screen):
    		self.cid = P		# Creature ID: Grass / Water / Fire
 		self.oid = None 	# Opponent ID: Grass / Water / Fire 
 		self.creature = None  	# User Creature class
@@ -24,6 +24,7 @@ class Player:
 		self.id = None		# id is index of server protocol list
 		self.state = 'start'
 		self.turn = None	# second player to connect gets first turn
+		self.screen = screen
 
 	def tick(self):
 		return
@@ -39,18 +40,31 @@ class commandConnProtocol(Protocol):
 		return
 
 	def dataReceived(self, data):
+		print self.state
+		print data
 		if self.state == 'start':
-			if data == 'Opponent Connected':
-				self.player.state = 'connected'
-				self.state = 'connected'
-			elif data == '0':
+				
+			if data == '0':
 				self.player.id = data
 				self.player.turn = 1
 			elif data == '1':
 				self.player.id = data
 				self.player.state = 'connected'
-				self.state = 'connected'
 				self.player.turn = 0
+				self.transport.write (str(self.player.cid))
+			else:
+				if data == 'Water':
+					self.player.ecreature = creature.Water(1)
+					self.player.oid = str(data)
+				elif data == 'Grass':
+					self.player.ecreature = creature.Grass(1)	
+					self.player.oid = str(data)
+				elif data == 'Fire':
+					self.player.ecreature = creature.Fire(1)
+					self.player.oid = str(data)
+				self.transport.write (str(self.player.cid))
+				self.state = 'battle'
+				self.player.state = 'battle'
 
 		elif self.state == 'connected':
 			print "Opponent type is " + data
@@ -65,13 +79,19 @@ class commandConnProtocol(Protocol):
 			self.player.state = 'battle'
 
 		elif self.state == 'battle':
-			if data == 'switch':
-				self.player.turn = 1
-			elif data == 'quit':
+			if data == 'quit':
 				self.player.state = 'quit'
+			else:
+				if data == 'primary':
+					self.player.ecreature.primary(self.player.creature, self.player.screen)
+				elif data == 'ultimate':
+					self.player.ecreature.ultimate(self.player.creature, self.player.screen)
+				elif data == 'right':
+					self.player.ecreature.move("right")
+				elif data == 'left':
+					self.player.ecreature.move("left")	
+				self.player.turn = 1			
 
-	def switchTurn(self):
-		self.transport.write('T')
 			
 
 
@@ -157,7 +177,7 @@ class Gamespace:
 					mx, my = pygame.mouse.get_pos()	
 					if mx < 205:
 						print "GRASS CREATURE SELECTED!"		
-						self.player = Player('Grass')
+						self.player = Player('Grass', self.screen)
 						self.player.creature = creature.Grass(0)
 						self.bar = pygame.image.load('grassbar.png')
 						self.barRect = self.bar.get_rect()
@@ -166,7 +186,7 @@ class Gamespace:
 						break
 					elif mx < 442:
 						print "WATER CREATURE SELECTED!"		
-						self.player = Player('Water')
+						self.player = Player('Water', self.screen)
 						self.player.creature = creature.Water(0)
 						self.bar = pygame.image.load('waterbar.png')
 						self.barRect = self.bar.get_rect()
@@ -175,7 +195,7 @@ class Gamespace:
 						break	
 					elif mx < 640:
 						print "FIRE CREATURE SELECTED!"		
-						self.player = Player('Fire')
+						self.player = Player('Fire', self.screen)
 						self.player.creature = creature.Fire(0)
 						self.bar = pygame.image.load('firebar.png')
 						self.barRect = self.bar.get_rect()
@@ -211,13 +231,7 @@ class Gamespace:
 
 		self.oType = self.myfont2.render(self.player.oid, 1, (250, 250, 250))
 
-		# Check if other player is connected.
-		# If connected, start battle mode
-		if self.player.state == 'connected':
-			self.CFactory.CPro.transport.write(str(self.player.cid))
-
-
-		elif self.player.state == 'battle':
+		if self.player.state == 'battle':
 			
 			self.screen.fill(self.black)
 			self.screen.blit(self.arenabackground, self.arenaRect)
@@ -227,7 +241,6 @@ class Gamespace:
 			# display creatures HERE
 			self.screen.blit(self.player.creature.image, self.player.creature.rect)
 			self.screen.blit(self.player.ecreature.image, self.player.ecreature.rect)
-			########################
 			
 			self.displayStats()
 			self.screen.blit(self.bar, self.barRect)
@@ -254,19 +267,19 @@ class Gamespace:
 						if mx < 320 and my > 372 and my < 425.5:
 							self.player.turn = 0
 							self.player.creature.primary(self.player.ecreature, self.screen)
-							print "Attack!"
+							self.CFactory.CPro.transport.write('primary')
 						elif mx < 320 and my > 426 and my < 479.5:
 							self.player.turn = 0
 							self.player.creature.ultimate(self.player.ecreature, self.screen)
-							print "Ultimate Attack!"
+							self.CFactory.CPro.transport.write('ultimate')
 						elif mx > 339 and mx < 474.7 and my > 427.49 and my < 480:				
 							self.player.turn = 0
 							self.player.creature.move("right")
-							print 'Forwards!'
+							self.CFactory.CPro.transport.write('right')
 						elif mx > 477.5 and my > 427.49:
 							self.player.turn = 0
 							self.player.creature.move("left")
-							print 'Backwards!'
+							self.CFactory.CPro.transport.write('left')
 			
 						if self.player.turn == 0:
 							break;
@@ -276,9 +289,6 @@ class Gamespace:
 						return
 
 				self.player.creature.update(self.player.ecreature)
-
-				if self.player.turn == 0:
-					self.CFactory.CPro.switchTurn()
 
 		elif self.player.state == 'quit':
 			self.screen.fill(self.black)
@@ -304,9 +314,9 @@ class Gamespace:
 			self.displayStats()	
 
 			if self.player.creature.currentHealth > self.player.ecreature.currentHealth:
-				title = self.myfont.render("Congratulations! YOU WIN!", 1, (255,255,255))
+				title = self.myfont.render("Congratulations! YOU WIN!", 1, (0,0,0))
 			else:
-				title = self.myfont.render("Better luck next time!", 1, (255,255,255))
+				title = self.myfont.render("Better luck next time!", 1, (0,0,0))
 
 			self.screen.blit(title, (50,200))
 			self.screen.blit(self.bar, self.barRect)
@@ -320,7 +330,7 @@ class Gamespace:
 			
 
 	def displayStats(self):
-		h = str(self.player.creature.currentHealth) + "/" + str(self.player.creature.health)
+		h = str(int(self.player.creature.currentHealth)) + "/" + str(self.player.creature.health)
 		Health = self.myfont3.render(str(h), 1, (250,250,250))
 		MP = self.myfont3.render(str(self.player.creature.MP), 1, (250,250,250))
 		Attack = self.myfont3.render(str(self.player.creature.Attack), 1, (250,250,250))
@@ -330,7 +340,7 @@ class Gamespace:
 		self.screen.blit(Attack, (271,42))
 		self.screen.blit(Defense, (287,66))
 
-		h = str(self.player.ecreature.currentHealth) + "/" + str(self.player.ecreature.health)
+		h = str(int(self.player.ecreature.currentHealth)) + "/" + str(self.player.ecreature.health)
 		Health = self.myfont3.render(str(h), 1, (250,250,250))
 		MP = self.myfont3.render(str(self.player.ecreature.MP), 1, (250,250,250))
 		Attack = self.myfont3.render(str(self.player.ecreature.Attack), 1, (250,250,250))

@@ -10,7 +10,7 @@ from twisted.internet import reactor
 from twisted.internet.defer import DeferredQueue
 
 
-class serverProtocol(LineReceiver):
+class serverProtocol(Protocol):
 	def __init__(self, F):
 		self.F = F
 		self.id = None
@@ -20,26 +20,18 @@ class serverProtocol(LineReceiver):
 		self.id = self.F.count
 		self.transport.write(str(self.F.count))
 		if self.F.count == 1:
-			self.F.players[0].transport.write('Opponent Connected')
 			self.F.players[0].state = 'connected'
 			self.state = 'connected'
 			
-
-
-	def switch(self):
-		self.transport.write('switch')
-
+		
 	def dataReceived(self, data):
-
+		print "Data received from " + str(self.id) + ": " + data
 		if self.state == 'battle':
-			if data == 'T':
-			# Switch turns, notify other player
-				print data
-				print "Server ID = " + str(self.id)
-				if self.id == 0:
-					self.F.players[1].switch()
-				else:
-					self.F.players[0].switch()
+			if self.id == 0:
+				self.F.players[1].transport.write(data)
+			else:
+				self.F.players[0].transport.write(data)
+
 		elif self.state == 'connected':
 			if data == "Fire" or data == "Water" or data == "Grass":
 				
