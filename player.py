@@ -135,7 +135,7 @@ class Gamespace:
 		# Title Screen
 		g = 1
 		self.screen.fill(self.black)
-		image = pygame.image.load('selection.png')	
+		image = pygame.image.load('selection2.png')	
 		rect = image.get_rect()
 		title = self.myfont.render("CREATURE BATTLERS!", 1, (255,255,255))
 		inst = self.myfont2.render("<Press Any Key to Continue>", 1, (200,200,200))
