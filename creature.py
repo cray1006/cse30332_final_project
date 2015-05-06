@@ -14,7 +14,10 @@ class Water:
 		self.image = None
 		self.move = 1
 		self.state = "normal"	#"normal", "frozen", or "drain"
-		return
+		#return
+
+	def move(self, d):
+		
 
 class Fire:
 	def __init__(self):
@@ -26,7 +29,7 @@ class Fire:
 		self.image = None
 		self.move = 2
 		self.state = "normal"
-		return
+		#return
 
 class Grass:
 	def __init__(self):
@@ -38,4 +41,4 @@ class Grass:
 		self.image = None
 		self.move = 2
 		self.state = "normal"
-		return
+		#return
