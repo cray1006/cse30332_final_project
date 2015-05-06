@@ -279,8 +279,10 @@ class Gamespace:
 								self.player.creature.ultimate(self.player.ecreature, self.screen)
 								self.CFactory.CPro.transport.write('ultimate')
 							else:
-								text = self.myfont.render("MP needs to be > 100", 1, (0,0,0))
-								self.screen.blit(text, (50,200))
+								msg = pygame.image.load('mpmsg.png')
+								mrect = msg.get_rect()
+								mrect.y = 200
+								self.screen.blit(msg, mrect)
 								mp = 1
 								break
 								
@@ -329,11 +331,15 @@ class Gamespace:
 
 			# Check who the winner is
 			if self.player.creature.currentHealth > self.player.ecreature.currentHealth:
-				title = self.myfont.render("Congratulations! YOU WIN!", 1, (0,0,0))
+				msg = pygame.image.load('won.png')
+				mrect = msg.get_rect()
+				mrect.y = 200
 			else:
-				title = self.myfont.render("Better luck next time!", 1, (0,0,0))
+				msg = pygame.image.load('lost.png')
 
-			self.screen.blit(title, (50,200))
+			mrect = msg.get_rect()
+			mrect.y = 200
+			self.screen.blit(msg, mrect)
 			self.screen.blit(self.bar, self.barRect)
 			pygame.display.flip()
 			time.sleep(4)
@@ -343,7 +349,7 @@ class Gamespace:
 
 		pygame.display.flip()
 		if mp == 1:
-			sleep(2)
+			time.sleep(2)
 			
 
 	# Function to Display Battle Stats
