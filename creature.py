@@ -16,23 +16,36 @@ class Water:
 		self.Defense = 2
 		self.move = 1
 		self.state = "normal"	#"normal", "frozen", or "drain"
+		self.player = player
 
-		if(player == 0):
+		if(self.player == 0):
 			self.image = pygame.image.load('water_back.png')
 			self.rect = self.image.get_rect()
-			self.rect.x = 272
+			self.rect.x = 200
 			self.rect.y = 221
 		else:
 			self.image = pygame.image.load('water_front.png')
 			self.rect = self.image.get_rect()
-			self.rect.x = 373
+			self.rect.x = 450
 			self.rect.y = 221
 		
 		color = self.image.get_at((0,0))
 		self.image.set_colorkey(color)
 
+	def move(self, direction):
+		if(self.player == 0):
+			if((direction == "left") and (self.rect.x > 100)):
+				self.rect.x -= 100
+			elif((direction == "right") and (self.rect.x < 300)):
+				self.rect.x += 100
+		else:
+			if((direction == "left") and (self.rect.x > 350)):
+				self.rect.x -= 100
+			elif((direction == "right") and (self.rect.x < 550)):
+				self.rect.x += 100
+
 class Fire:
-	def __init__(self):
+	def __init__(self, player):
 		self.health = 100
 		self.currentHealth = 100
 		self.MP = 100
@@ -40,23 +53,36 @@ class Fire:
 		self.Defense = 1
 		self.move = 2
 		self.state = "normal"
+		self.player = player
 
-		if(player == 0):
+		if(self.player == 0):
 			self.image = pygame.image.load('fire_back.png')
 			self.rect = self.image.get_rect()
-			self.rect.x = 272
+			self.rect.x = 200
 			self.rect.y = 221
 		else:
 			self.image = pygame.image.load('fire_front.png')
 			self.rect = self.image.get_rect()
-			self.rect.x = 373
+			self.rect.x = 450
 			self.rect.y = 221
 		
 		color = self.image.get_at((0,0))
 		self.image.set_colorkey(color)
 
+	def move(self, direction):
+		if(self.player == 0):
+			if((direction == "left") and (self.rect.x > 100)):
+				self.rect.x -= 100
+			elif((direction == "right") and (self.rect.x < 300)):
+				self.rect.x += 100
+		else:
+			if((direction == "left") and (self.rect.x > 350)):
+				self.rect.x -= 100
+			elif((direction == "right") and (self.rect.x < 550)):
+				self.rect.x += 100
+
 class Grass:
-	def __init__(self):
+	def __init__(self, player):
 		self.health = 200
 		self.currentHealth = 100
 		self.MP = 100
@@ -64,17 +90,30 @@ class Grass:
 		self.Defense = 0
 		self.move = 2
 		self.state = "normal"
+		self.player = player
 
-		if(player == 0):
+		if(self.player == 0):
 			self.image = pygame.image.load('grass_back.png')
 			self.rect = self.image.get_rect()
-			self.rect.x = 272
+			self.rect.x = 200
 			self.rect.y = 221
 		else:
 			self.image = pygame.image.load('grass_front.png')
 			self.rect = self.image.get_rect()
-			self.rect.x = 373
+			self.rect.x = 450
 			self.rect.y = 221
 		
 		color = self.image.get_at((0,0))
 		self.image.set_colorkey(color)
+
+	def move(self, direction):
+		if(self.player == 0):
+			if((direction == "left") and (self.rect.x > 100)):
+				self.rect.x -= 100
+			elif((direction == "right") and (self.rect.x < 300)):
+				self.rect.x += 100
+		else:
+			if((direction == "left") and (self.rect.x > 350)):
+				self.rect.x -= 100
+			elif((direction == "right") and (self.rect.x < 550)):
+				self.rect.x += 100
