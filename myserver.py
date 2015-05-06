@@ -52,10 +52,11 @@ class serverProtocol(LineReceiver):
 
 	def connectionLost(self, reason):
 		# if connection is lost, notify other player
-		if self.id == 0:
+		
+		if self.id == 0 and self.F.players[1] is not None:
 			self.F.players[1].transport.write('quit')
-		else:
-			self.F.players[0].transport.write('quit')
+		elif self.F.players[0] is not None:
+			self.F.players[0].transport.write('quit')			
 
 		self.F.players[self.id] = None
 		self.F.count = -1
