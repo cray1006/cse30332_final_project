@@ -19,7 +19,7 @@ class serverProtocol(LineReceiver):
 	def connectionMade(self):
 		self.id = self.F.count
 		self.transport.write(str(self.F.count))
-		if self.F.count = 1:
+		if self.F.count == 1:
 			self.F.players[0].transport.write('Opponent Connected')
 			self.F.players[0].state = 'connected'
 			self.state = 'connected'
