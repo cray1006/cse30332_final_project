@@ -311,6 +311,9 @@ class Fire(pygame.sprite.Sprite):
 			self.drain = 0
 
 	def primary(self, enemy, screen):
+		cast = pygame.mixer.Sound('./music/fireball.ogg')
+		hit = pygame.mixer.Sound('./music/fire_impact.ogg')
+		cast.play()
 		fb = fireball(self.player, self.rect.centerx, self.rect.centery, self.gs)
 		base = 10
 		damage = base + (base * self.Attack)
@@ -320,11 +323,15 @@ class Fire(pygame.sprite.Sprite):
 			screen.blit(fb.image, fb.rect)
 			pygame.display.flip()
 			if(pygame.sprite.collide_rect(fb, enemy)):
+				hit.play()
 				enemy.is_hit("primary", damage)
 				break
 
 	def ultimate(self, enemy, screen):
 		if(self.MP >= 100):
+			cast = pygame.mixer.Sound('./music/fireball.ogg')
+			hit = pygame.mixer.Sound('./music/fire_impact.ogg')
+			cast.play()
 			self.MP -= 100
 			pb = pyro(self.player, self.rect.centerx, self.rect.centery, self.gs)
 			base = 50
@@ -335,6 +342,7 @@ class Fire(pygame.sprite.Sprite):
 				screen.blit(pb.image, pb.rect)
 				pygame.display.flip()
 				if(pygame.sprite.collide_rect(pb, enemy)):
+					hit.play()
 					enemy.is_hit("pyro")
 					break
 				
@@ -422,6 +430,9 @@ class Grass(pygame.sprite.Sprite):
 			self.drain = 0
 
 	def primary(self, enemy, screen):
+		cast = pygame.mixer.Sound('./music/whip.ogg')
+		hit = pygame.mixer.Sound('./music/whip_impact.ogg')
+		cast.play()
 		whip = vine(self.player, self.rect.centerx, self.rect.centery, self.gs)
 		base = 10
 		damage = base + (base * self.Attack)
@@ -431,11 +442,15 @@ class Grass(pygame.sprite.Sprite):
 			screen.blit(whip.image, whip.rect)
 			pygame.display.flip()
 			if(pygame.sprite.collide_rect(whip, enemy)):
+				hit.play()
 				enemy.is_hit("primary", damage)
 				break
 
 	def ultimate(self, enemy, screen):
 		if(self.MP >= 100):
+			cast = pygame.mixer.Sound('./music/giga.ogg')
+			hit = pygame.mixer.Sound('./music/giga_hit.ogg')
+			cast.play()
 			self.MP -= 100
 			gd = giga(self.player, self.rect.centerx, self.rect.centery, self.gs)
 			base = 0
@@ -446,6 +461,7 @@ class Grass(pygame.sprite.Sprite):
 				screen.blit(gd.image, gd.rect)
 				pygame.display.flip()
 				if(pygame.sprite.collide_rect(gd, enemy)):
+					hit.play()
 					enemy.is_hit("giga")
 					break
 				
