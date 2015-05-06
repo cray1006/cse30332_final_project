@@ -502,7 +502,6 @@ class Grass(pygame.sprite.Sprite):
 					break
 				
 	def update(self, enemy, turn):
-	def update(self, enemy, turn):
 		drain_sound = pygame.mixer.Sound('./music/drain_sound.ogg')
 		freeze_sound = pygame.mixer.Sound('./music/freeze.ogg')
 		if(self.state == "drain"):
