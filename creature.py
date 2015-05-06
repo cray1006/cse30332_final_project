@@ -245,7 +245,10 @@ class Water(pygame.sprite.Sprite):
 				self.state = "normal"
 
 		if(turn == 1):
-			if((self.MP <= 0) and (self.recharge == 1)):
+			if(self.MP <= 0):
+				self.recharge = 1
+			
+			if(self.recharge == 1)
 				self.MP += 25
 				if(self.MP >= 100):
 					self.MP = 100
@@ -379,7 +382,10 @@ class Fire(pygame.sprite.Sprite):
 				self.state = "normal"
 
 		if(turn == 1):
-			if((self.MP <= 0) and (self.recharge == 1)):
+			if(self.MP <= 0):
+				self.recharge = 1
+			
+			if(self.recharge == 1)
 				self.MP += 25
 				if(self.MP >= 100):
 					self.MP = 100
@@ -496,6 +502,7 @@ class Grass(pygame.sprite.Sprite):
 					break
 				
 	def update(self, enemy, turn):
+	def update(self, enemy, turn):
 		drain_sound = pygame.mixer.Sound('./music/drain_sound.ogg')
 		freeze_sound = pygame.mixer.Sound('./music/freeze.ogg')
 		if(self.state == "drain"):
@@ -513,7 +520,10 @@ class Grass(pygame.sprite.Sprite):
 				self.state = "normal"
 
 		if(turn == 1):
-			if((self.MP <= 0) and (self.recharge == 1)):
+			if(self.MP <= 0):
+				self.recharge = 1
+			
+			if(self.recharge == 1)
 				self.MP += 25
 				if(self.MP >= 100):
 					self.MP = 100
