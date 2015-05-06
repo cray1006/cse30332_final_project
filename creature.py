@@ -243,8 +243,6 @@ class Water(pygame.sprite.Sprite):
 			else:
 				self.state = "normal"
 
-		self.currentHealth = self.health
-
 		if(self.MP < 100):
 			self.MP += 25
 			if(self.MP >= 100):
@@ -376,8 +374,6 @@ class Fire(pygame.sprite.Sprite):
 			else:
 				self.state = "normal"
 
-		self.currentHealth = self.health
-
 		if(self.MP < 100):
 			self.MP += 25
 			if(self.MP >= 100):
@@ -443,7 +439,7 @@ class Grass(pygame.sprite.Sprite):
 				if((direction == "left") and (self.rect.x > 350)):
 					self.rect = self.rect.move(100, 0)
 				elif((direction == "right") and (self.rect.x < 550)):
-					self.rect = self.rect.move(-cur100, 0)
+					self.rect = self.rect.move(-100, 0)
 
 	def is_hit(self, attack, damage):
 		if((attack == "primary") or (attack == "pyro")):
@@ -508,8 +504,6 @@ class Grass(pygame.sprite.Sprite):
 				self.drain += 1
 			else:
 				self.state = "normal"
-
-		self.currentHealth = self.health
 
 		if(self.MP < 100):
 			self.MP += 25
