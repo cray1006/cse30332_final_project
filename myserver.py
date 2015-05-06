@@ -17,9 +17,9 @@ class serverProtocol(LineReceiver):
 		self.state = 'start'
 
 	def connectionMade(self):
-		self.id =  self.F.count
+		self.id = self.F.count
 		self.transport.write(str(self.F.count))
-		if self.F.count > 1:
+		if self.F.count = 1:
 			self.F.players[0].transport.write('Opponent Connected')
 			self.F.players[0].state = 'connected'
 			self.state = 'connected'
@@ -42,6 +42,7 @@ class serverProtocol(LineReceiver):
 					self.F.players[0].switch()
 		elif self.state == 'connected':
 			if data == "Fire" or data == "Water" or data == "Grass":
+				
 				if self.id == 0:
 					self.F.players[1].transport.write(data)
 				else:
