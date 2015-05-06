@@ -140,6 +140,7 @@ class giga(pygame.sprite.Sprite):
 		
 class Water(pygame.sprite.Sprite):
 	def __init__(self, player, gs = None):
+		pygame.mixer.init()
 		self.gs = gs
 		self.health = 100
 		self.currentHealth = 100
@@ -190,6 +191,9 @@ class Water(pygame.sprite.Sprite):
 			self.drain = 0
 
 	def primary(self, enemy, screen):
+		cast = pygame.mixer.Sound('./music/ice_cast.ogg')
+		hit = pygame.mixer.Sound('./music/ice_hit.ogg')
+		cast.play()
 		lance = ice(self.player, self.rect.centerx, self.rect.centery, self.gs)
 		base = 10
 		damage = base + (base * self.Attack)
@@ -199,11 +203,15 @@ class Water(pygame.sprite.Sprite):
 			screen.blit(lance.image, lance.rect)
 			pygame.display.flip()
 			if(pygame.sprite.collide_rect(lance, enemy)):
+				hit.play()
 				enemy.is_hit("primary", damage)
 				break
 
 	def ultimate(self, enemy, screen):
 		if(self.MP >= 50):
+			cast = pygame.mixer.Sound('./music/ice_cast.ogg')
+			hit = pygame.mixer.Sound('./music/ice_hit.ogg')
+			cast.play()
 			self.MP -= 50
 			f = freeze(self.player, self.rect.centerx, self.rect.centery, self.gs)
 			base = 0
@@ -214,10 +222,13 @@ class Water(pygame.sprite.Sprite):
 				screen.blit(f.image, f.rect)
 				pygame.display.flip()
 				if(pygame.sprite.collide_rect(f, enemy)):
+					hit.play()
 					enemy.is_hit("freeze")
 					break
 				
 	def update(self, enemy):
+		drain_sound = pygame.mixer.Sound('./music/drain_sound.ogg')
+		freeze_sound = pygame.mixer.Sound('./music/freeze.ogg')
 		if(self.state == "drain"):
 			self.health -= 10
 			if(enemy.health < 200):
@@ -227,6 +238,7 @@ class Water(pygame.sprite.Sprite):
 					enemy.health = 200
 
 			if(self.drain < 3):
+				drain_sound.play()
 				self.drain += 1
 			else:
 				self.state = "normal"
@@ -241,6 +253,7 @@ class Water(pygame.sprite.Sprite):
 			
 			if(self.state == "frozen"):
 				if(self.frozen < 1):
+					freeze_sound.play()
 					self.frozen += 1
 				else:
 					self.state = "normal"
@@ -326,14 +339,18 @@ class Fire(pygame.sprite.Sprite):
 					break
 				
 	def update(self, enemy):
+		drain_sound = pygame.mixer.Sound('./music/drain_sound.ogg')
+		freeze_sound = pygame.mixer.Sound('./music/freeze.ogg')
 		if(self.state == "drain"):
 			self.health -= 10
 			if(enemy.health < 200):
 				enemy.health += 10
+
 				if(enemy.health >= 200):
 					enemy.health = 200
 
 			if(self.drain < 3):
+				drain_sound.play()
 				self.drain += 1
 			else:
 				self.state = "normal"
@@ -348,9 +365,10 @@ class Fire(pygame.sprite.Sprite):
 			
 			if(self.state == "frozen"):
 				if(self.frozen < 1):
+					freeze_sound.play()
 					self.frozen += 1
 				else:
-					self.state = "normal"
+					self.state = "normal""
 
 class Grass(pygame.sprite.Sprite):
 	def __init__(self, player, gs = None):
@@ -432,15 +450,18 @@ class Grass(pygame.sprite.Sprite):
 					break
 				
 	def update(self, enemy):
+		drain_sound = pygame.mixer.Sound('./music/drain_sound.ogg')
+		freeze_sound = pygame.mixer.Sound('./music/freeze.ogg')
 		if(self.state == "drain"):
 			self.health -= 10
 			if(enemy.health < 200):
 				enemy.health += 10
-				
+
 				if(enemy.health >= 200):
 					enemy.health = 200
 
 			if(self.drain < 3):
+				drain_sound.play()
 				self.drain += 1
 			else:
 				self.state = "normal"
@@ -450,9 +471,12 @@ class Grass(pygame.sprite.Sprite):
 		else:
 			if(self.MP < 100):
 				self.MP += 25
+				if(self.MP >= 100):
+					self.MP = 100
 			
 			if(self.state == "frozen"):
 				if(self.frozen < 1):
+					freeze_sound.play()
 					self.frozen += 1
 				else:
 					self.state = "normal"
