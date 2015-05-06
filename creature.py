@@ -152,7 +152,6 @@ class Water(pygame.sprite.Sprite):
 		self.frozen = 0
 		self.drain = 0
 		self.player = player
-		self.idle = 0
 
 		if(self.player == 0):
 			self.image = pygame.image.load('water_back.png')
@@ -192,23 +191,43 @@ class Water(pygame.sprite.Sprite):
 			self.drain = 0
 
 	def primary(self, enemy, screen):
-		cast = pygame.mixer.Sound('./music/ice_cast.ogg')
-		hit = pygame.mixer.Sound('./music/ice_hit.ogg')
-		cast.play()
-		lance = ice(self.player, self.rect.centerx, self.rect.centery, self.gs)
-		base = 10
-		damage = base + (base * self.Attack)
-		i = 0
-		while(i < 3):
-			lance.move()
-			screen.blit(lance.image, lance.rect)
-			pygame.display.flip()
-			if(pygame.sprite.collide_rect(lance, enemy)):
-				hit.play()
-				enemy.is_hit("primary", damage)
-				break
+		if(self.state != "frozen"):
+			cast = pygame.mixer.Sound('./music/ice_cast.ogg')
+			hit = pygame.mixer.Sound('./music/ice_hit.ogg')
+			cast.play()
+			lance = ice(self.player, self.rect.centerx, self.rect.centery, self.gs)
+			base = 10
+			damage = base + (base * self.Attack)
+			i = 0
+			while(i < 3):
+				lance.move()
+				screen.blit(lance.image, lance.rect)
+				pygame.display.flip()
+				if(pygame.sprite.collide_rect(lance, enemy)):
+					hit.play()
+					enemy.is_hit("primary", damage)
+					break
 
 	def ultimate(self, enemy, screen):
+		if((self.MP >= 50) and (self.state != "frozen")):
+			cast = pygame.mixer.Sound('./music/ice_cast.ogg')
+			hit = pygame.mixer.Sound('./music/ice_hit.ogg')
+			cast.play()
+			self.MP -= 50
+			f = freeze(self.player, self.rect.centerx, self.rect.centery, self.gs)
+			base = 0
+			damage = base + (base * self.Attack)
+			i = 0
+			while(i < 2):
+				f.move()
+				screen.blit(f.image, f.rect)
+				pygame.display.flip()
+				if(pygame.sprite.collide_rect(f, enemy)):
+					hit.play()
+					enemy.is_hit("freeze")
+					break
+				
+	def update(self, enemy):
 		drain_sound = pygame.mixer.Sound('./music/drain_sound.ogg')
 		freeze_sound = pygame.mixer.Sound('./music/freeze.ogg')
 		if(self.state == "drain"):
@@ -266,7 +285,7 @@ class Fire(pygame.sprite.Sprite):
 		self.player = player
 		self.frozen = 0
 		self.drain = 0
-		self.idle = 0
+		self.idle = 
 
 		if(self.player == 0):
 			self.image = pygame.image.load('fire_back.png')
@@ -306,24 +325,25 @@ class Fire(pygame.sprite.Sprite):
 			self.drain = 0
 
 	def primary(self, enemy, screen):
-		cast = pygame.mixer.Sound('./music/fireball.ogg')
-		hit = pygame.mixer.Sound('./music/fire_impact.ogg')
-		cast.play()
-		fb = fireball(self.player, self.rect.centerx, self.rect.centery, self.gs)
-		base = 10
-		damage = base + (base * self.Attack)
-		i = 0
-		while(i < 3):
-			fb.move()
-			screen.blit(fb.image, fb.rect)
-			pygame.display.flip()
-			if(pygame.sprite.collide_rect(fb, enemy)):
-				hit.play()
-				enemy.is_hit("primary", damage)
-				break
+		if(self.state != "frozen"):
+			cast = pygame.mixer.Sound('./music/fireball.ogg')
+			hit = pygame.mixer.Sound('./music/fire_impact.ogg')
+			cast.play()
+			fb = fireball(self.player, self.rect.centerx, self.rect.centery, self.gs)
+			base = 10
+			damage = base + (base * self.Attack)
+			i = 0
+			while(i < 3):
+				fb.move()
+				screen.blit(fb.image, fb.rect)
+				pygame.display.flip()
+				if(pygame.sprite.collide_rect(fb, enemy)):
+					hit.play()
+					enemy.is_hit("primary", damage)
+					break
 
 	def ultimate(self, enemy, screen):
-		if(self.MP >= 100):
+		if((self.MP >= 100) and (self.state != "freeze")):
 			cast = pygame.mixer.Sound('./music/fireball.ogg')
 			hit = pygame.mixer.Sound('./music/fire_impact.ogg')
 			cast.play()
@@ -439,24 +459,25 @@ class Grass(pygame.sprite.Sprite):
 			self.drain = 0
 
 	def primary(self, enemy, screen):
-		cast = pygame.mixer.Sound('./music/whip.ogg')
-		hit = pygame.mixer.Sound('./music/whip_impact.ogg')
-		cast.play()
-		whip = vine(self.player, self.rect.centerx, self.rect.centery, self.gs)
-		base = 10
-		damage = base + (base * self.Attack)
-		i = 0
-		while(i < 3):
-			whip.move()
-			screen.blit(whip.image, whip.rect)
-			pygame.display.flip()
-			if(pygame.sprite.collide_rect(whip, enemy)):
-				hit.play()
-				enemy.is_hit("primary", damage)
-				break
+		if(self.state != "frozen"):
+			cast = pygame.mixer.Sound('./music/whip.ogg')
+			hit = pygame.mixer.Sound('./music/whip_impact.ogg')
+			cast.play()
+			whip = vine(self.player, self.rect.centerx, self.rect.centery, self.gs)
+			base = 10
+			damage = base + (base * self.Attack)
+			i = 0
+			while(i < 3):
+				whip.move()
+				screen.blit(whip.image, whip.rect)
+				pygame.display.flip()
+				if(pygame.sprite.collide_rect(whip, enemy)):
+					hit.play()
+					enemy.is_hit("primary", damage)
+					break
 
 	def ultimate(self, enemy, screen):
-		if(self.MP >= 100):
+		if((self.MP >= 100) and (self.state != "freeze")):
 			cast = pygame.mixer.Sound('./music/giga.ogg')
 			hit = pygame.mixer.Sound('./music/giga_hit.ogg')
 			cast.play()
