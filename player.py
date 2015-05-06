@@ -11,14 +11,16 @@ from twisted.protocols.basic import LineReceiver
 from twisted.internet.protocol import Protocol
 from twisted.internet import reactor
 from twisted.internet.task import LoopingCall
-#import creature
+import creature
 
 
 # Player Class
 class Player:
 	def __init__(self, P):
-   		self.cid = P	# Creature ID: G = grass, F = fire, W = water
-   		self.eCreature = None
+   		self.cid = P		# Creature ID: Grass / Water / Fire
+		self.oid = None 	# Opponent ID: Grass / Water / Fire 
+		self.creature = None  	# User Creature class
+		self.ecreature = None	# Opponent creature class
 		self.id = None		# id is index of server protocol list
 		self.state = 'start'
 		self.turn = None	# second player to connect gets first turn
@@ -51,6 +53,18 @@ class commandConnProtocol(Protocol):
 				self.player.turn = 0
 
 		elif self.state == 'connected':
+			print "Opponent type is " + data
+			self.player.oid = str(data)
+			if data == 'Water':
+				self.player.ecreature = creature.Water()
+			elif data == 'Grass':
+				self.player.ecreature = creature.Grass()
+			elif data == 'Fire':
+				self.player.ecreature = creature.Fire()
+			self.state = 'battle'
+			self.player.state = 'battle'
+
+		elif self.state == 'battle':
 			if data == 'switch':
 				self.player.turn = 1
 			elif data == 'quit':
@@ -77,6 +91,7 @@ class Gamespace:
 		pygame.init()
 		self.myfont = pygame.font.SysFont("monospace",50)
 		self.myfont2 = pygame.font.SysFont("monospace",25)
+		self.myfont3 = pygame.font.SysFont("monospace",20)
 		pygame.key.set_repeat(1,50)
 
 		self.size = self.width, self.height = 640, 480
@@ -139,7 +154,8 @@ class Gamespace:
 					mx, my = pygame.mouse.get_pos()	
 					if mx < 205:
 						print "GRASS CREATURE SELECTED!"		
-						self.player = Player('G')
+						self.player = Player('Grass')
+						self.player.creature = creature.Grass()
 						self.bar = pygame.image.load('grassbar.png')
 						self.barRect = self.bar.get_rect()
 						self.barRect.y = 372
@@ -147,7 +163,8 @@ class Gamespace:
 						break
 					elif mx < 442:
 						print "WATER CREATURE SELECTED!"		
-						self.player = Player('W')
+						self.player = Player('Water')
+						self.player.creature = creature.Water()
 						self.bar = pygame.image.load('waterbar.png')
 						self.barRect = self.bar.get_rect()
 						self.barRect.y = 372
@@ -155,12 +172,14 @@ class Gamespace:
 						break	
 					elif mx < 640:
 						print "FIRE CREATURE SELECTED!"		
-						self.player = Player('F')
+						self.player = Player('Fire')
+						self.player.creature = creature.Fire()
 						self.bar = pygame.image.load('firebar.png')
 						self.barRect = self.bar.get_rect()
 						self.barRect.y = 372
 						g = 0
 						break	
+
 				elif event.type == QUIT:	
 					sys.exit()
 	
@@ -175,6 +194,7 @@ class Gamespace:
 
 
 	def main(self):
+		self.cType = self.myfont2.render(self.player.cid, 1, (250, 250, 250))
 		self.CFactory = commandConnFactory(self.player)
 		reactor.connectTCP('student02.cse.nd.edu', 40020, self.CFactory)
 		lc = LoopingCall(self.gameloop)		
@@ -186,14 +206,27 @@ class Gamespace:
 
 	def gameloop(self):
 
+		self.oType = self.myfont2.render(self.player.oid, 1, (250, 250, 250))
+
 		# Check if other player is connected.
 		# If connected, start battle mode
 		if self.player.state == 'connected':
+			self.CFactory.CPro.transport.write(str(self.player.cid))
 
+
+		elif self.player.state == 'battle':
+			
 			self.screen.fill(self.black)
 			self.screen.blit(self.arenabackground, self.arenaRect)
+			self.screen.blit(self.cType, (133,21))
+			self.screen.blit(self.oType, (395,21))
 
-			# display creatures
+			# display creatures HERE
+
+			########################
+			
+			self.displayStats()
+			
 
 			self.screen.blit(self.bar, self.barRect)
 		
@@ -203,7 +236,6 @@ class Gamespace:
 				for e in events:
 					if e.type == QUIT:
 						reactor.stop()
-						#sys.exit()
 						return
 			else:
 				self.screen.blit(self.yourturn, self.yourturnRect)
@@ -232,7 +264,6 @@ class Gamespace:
 
 					if e.type == QUIT:
 						reactor.stop()
-						#sys.exit()
 						return
 
 				if self.player.turn == 0:
@@ -245,13 +276,32 @@ class Gamespace:
 			pygame.display.flip()
 			time.sleep(7)
 			reactor.stop()
-			#sys.exit()
 			return
 			
 
 		pygame.display.flip()
 			
 
+	def displayStats(self):
+		h = str(self.player.creature.currentHealth) + "/" + str(self.player.creature.health)
+		Health = self.myfont3.render(str(h), 1, (250,250,250))
+		MP = self.myfont3.render(str(self.player.creature.MP), 1, (250,250,250))
+		Attack = self.myfont3.render(str(self.player.creature.Attack), 1, (250,250,250))
+		Defense = self.myfont3.render(str(self.player.creature.Defense), 1, (250,250,250))
+		self.screen.blit(Health, (140, 42))
+		self.screen.blit(MP, (119,66))
+		self.screen.blit(Attack, (271,42))
+		self.screen.blit(Defense, (287,66))
+
+		h = str(self.player.ecreature.currentHealth) + "/" + str(self.player.ecreature.health)
+		Health = self.myfont3.render(str(h), 1, (250,250,250))
+		MP = self.myfont3.render(str(self.player.ecreature.MP), 1, (250,250,250))
+		Attack = self.myfont3.render(str(self.player.ecreature.Attack), 1, (250,250,250))
+		Defense = self.myfont3.render(str(self.player.ecreature.Defense), 1, (250,250,250))
+		self.screen.blit(Health, (406,42))
+		self.screen.blit(MP, (381,66))
+		self.screen.blit(Attack, (543,42))
+		self.screen.blit(Defense, (543,66))
 			
 		
 			

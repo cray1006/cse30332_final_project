@@ -30,18 +30,28 @@ class serverProtocol(LineReceiver):
 		self.transport.write('switch')
 
 	def dataReceived(self, data):
-		print data
-		print "Server state = " + self.state
-		if self.state == 'connected':
+
+		if self.state == 'battle':
 			if data == 'T':
+			# Switch turns, notify other player
 				print data
 				print "Server ID = " + str(self.id)
 				if self.id == 0:
 					self.F.players[1].switch()
 				else:
 					self.F.players[0].switch()
+		elif self.state == 'connected':
+			if data == "Fire" or data == "Water" or data == "Grass":
+				print data
+				if self.id == 0:
+					self.F.players[1].transport.write(data)
+				else:
+					self.F.players[0].transport.write(data)
+				self.state = 'battle'
+			
 
 	def connectionLost(self, reason):
+		# if connection is lost, notify other player
 		if self.id == 0:
 			self.F.players[1].transport.write('quit')
 		else:
