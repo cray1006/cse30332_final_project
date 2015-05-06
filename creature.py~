@@ -39,7 +39,7 @@ class pyro(pygame.sprite.Sprite):
 		self.rect = self.image.get_rect()
 		self.rect.x = x
 		self.rect.y = y
-		color = self.image.get_at((0,0))
+		color = self.image.get_at((10,10))
 		self.image.set_colorkey(color)
 		self.player = player
 
@@ -167,7 +167,7 @@ class Water(pygame.sprite.Sprite):
 		color = self.image.get_at((0,0))
 		self.image.set_colorkey(color)
 
-	def move(self, direction):
+	def move(self, direction, enemy):
 		if(self.state != "frozen"):
 			if(self.player == 0):
 				if((direction == "left") and (self.rect.x > 100)):
@@ -179,6 +179,8 @@ class Water(pygame.sprite.Sprite):
 					self.rect = self.rect.move(100, 0)
 				elif((direction == "right") and (self.rect.x < 550)):
 					self.rect = self.rect.move(-100, 0)
+	
+		self.update(enemy)
 
 	def is_hit(self, attack, damage):
 		if((attack == "primary") or (attack == "pyro")):
@@ -196,7 +198,7 @@ class Water(pygame.sprite.Sprite):
 			hit = pygame.mixer.Sound('./music/ice_hit.ogg')
 			cast.play()
 			lance = ice(self.player, self.rect.centerx, self.rect.centery, self.gs)
-			base = 10
+			base = 15
 			damage = (base * self.Attack)
 			i = 0
 			while(i < 3):
@@ -207,6 +209,8 @@ class Water(pygame.sprite.Sprite):
 					hit.play()
 					enemy.is_hit("primary", damage)
 					break
+		
+		self.update(enemy)
 
 	def ultimate(self, enemy, screen):
 		if((self.MP >= 100) and (self.state != "frozen")):
@@ -226,8 +230,10 @@ class Water(pygame.sprite.Sprite):
 					hit.play()
 					enemy.is_hit("freeze", damage)
 					break
-				
-	def update(self, enemy, turn):
+
+		self.update(enemy)
+
+	def update(self, enemy):
 		drain_sound = pygame.mixer.Sound('./music/drain_sound.ogg')
 		freeze_sound = pygame.mixer.Sound('./music/freeze.ogg')
 		if(self.state == "drain"):
@@ -244,7 +250,7 @@ class Water(pygame.sprite.Sprite):
 			else:
 				self.state = "normal"
 
-		if(turn == 1):
+		
 			if(self.MP <= 0):
 				self.recharge = 1
 			
@@ -260,7 +266,9 @@ class Water(pygame.sprite.Sprite):
 				self.frozen += 1
 			else:
 				self.state = "normal"
-
+		
+				
+	def tick(self):
 		if(self.idle == 0):
 			self.rect = self.rect.move(0, 5)
 			self.idle  = 1
@@ -281,7 +289,7 @@ class Fire(pygame.sprite.Sprite):
 		self.health = 100
 		self.currentHealth = 100
 		self.MP = 100
-		self.Attack = 1.5
+		self.Attack = 1.7
 		self.Defense = 1.5
 		self.state = "normal"
 		self.player = player
@@ -304,7 +312,7 @@ class Fire(pygame.sprite.Sprite):
 		color = self.image.get_at((0,0))
 		self.image.set_colorkey(color)
 
-	def move(self, direction):
+	def move(self, direction, enemy):
 		if(self.state != "frozen"):
 			if(self.player == 0):
 				if((direction == "left") and (self.rect.x > 100)):
@@ -317,6 +325,8 @@ class Fire(pygame.sprite.Sprite):
 				elif((direction == "right") and (self.rect.x < 550)):
 					self.rect = self.rect.move(-100, 0)
 
+		self.update(enemy)
+
 	def is_hit(self, attack, damage):
 		if((attack == "primary") or (attack == "pyro")):
 			self.currentHealth -= (damage - (10 / self.Defense))
@@ -327,13 +337,47 @@ class Fire(pygame.sprite.Sprite):
 			self.state = "drain"
 			self.drain = 0
 
+	def update(self, enemy):
+		drain_sound = pygame.mixer.Sound('./music/drain_sound.ogg')
+		freeze_sound = pygame.mixer.Sound('./music/freeze.ogg')
+		if(self.state == "drain"):
+			self.currentHealth -= 10
+			if(enemy.currentHealth < 200):
+				enemy.currentHealth += 10
+
+				if(enemy.currentHealth >= 200):
+					enemy.currentHealth = 200
+
+			if(self.drain < 3):
+				drain_sound.play()
+				self.drain += 1
+			else:
+				self.state = "normal"
+
+		
+			if(self.MP <= 0):
+				self.recharge = 1
+			
+			if(self.recharge == 1):
+				self.MP += 25
+				if(self.MP >= 100):
+					self.MP = 100
+					self.recharge = 0
+		
+		if(self.state == "frozen"):
+			if(self.frozen < 1):
+				freeze_sound.play()
+				self.frozen += 1
+			else:
+				self.state = "normal"
+
 	def primary(self, enemy, screen):
 		if(self.state != "frozen"):
 			cast = pygame.mixer.Sound('./music/fireball.ogg')
 			hit = pygame.mixer.Sound('./music/fire_impact.ogg')
 			cast.play()
 			fb = fireball(self.player, self.rect.centerx, self.rect.centery, self.gs)
-			base = 10
+			base = 15
 			damage = (base * self.Attack)
 			i = 0
 			while(i < 3):
@@ -344,6 +388,8 @@ class Fire(pygame.sprite.Sprite):
 					hit.play()
 					enemy.is_hit("primary", damage)
 					break
+
+		self.update(enemy)
 
 	def ultimate(self, enemy, screen):
 		if((self.MP >= 100) and (self.state != "freeze")):
@@ -363,41 +409,10 @@ class Fire(pygame.sprite.Sprite):
 					hit.play()
 					enemy.is_hit("pyro", damage)
 					break
+
+		self.update(enemy)
 				
-	def update(self, enemy, turn):
-		drain_sound = pygame.mixer.Sound('./music/drain_sound.ogg')
-		freeze_sound = pygame.mixer.Sound('./music/freeze.ogg')
-		if(self.state == "drain"):
-			self.currentHealth -= 10
-			if(enemy.currentHealth < 200):
-				enemy.currentHealth += 10
-
-				if(enemy.currentHealth >= 200):
-					enemy.currentHealth = 200
-
-			if(self.drain < 3):
-				drain_sound.play()
-				self.drain += 1
-			else:
-				self.state = "normal"
-
-		if(turn == 1):
-			if(self.MP <= 0):
-				self.recharge = 1
-			
-			if(self.recharge == 1):
-				self.MP += 25
-				if(self.MP >= 100):
-					self.MP = 100
-					self.recharge = 0
-		
-		if(self.state == "frozen"):
-			if(self.frozen < 1):
-				freeze_sound.play()
-				self.frozen += 1
-			else:
-				self.state = "normal"
-
+	def tick(self):
 		if(self.idle == 0):
 			self.rect = self.rect.move(0, 5)
 			self.idle  = 1
@@ -418,7 +433,7 @@ class Grass(pygame.sprite.Sprite):
 		self.health = 200
 		self.currentHealth = 200
 		self.MP = 100
-		self.Attack = 1.3
+		self.Attack = 1
 		self.Defense = 1
 		self.state = "normal"
 		self.player = player
@@ -441,7 +456,7 @@ class Grass(pygame.sprite.Sprite):
 		color = self.image.get_at((0,0))
 		self.image.set_colorkey(color)
 
-	def move(self, direction):
+	def move(self, direction, enemy):
 		if(self.state != "frozen"):
 			if(self.player == 0):
 				if((direction == "left") and (self.rect.x > 100)):
@@ -453,6 +468,8 @@ class Grass(pygame.sprite.Sprite):
 					self.rect = self.rect.move(100, 0)
 				elif((direction == "right") and (self.rect.x < 550)):
 					self.rect = self.rect.move(-100, 0)
+
+		self.update(enemy)
 
 	def is_hit(self, attack, damage):
 		if((attack == "primary") or (attack == "pyro")):
@@ -470,7 +487,7 @@ class Grass(pygame.sprite.Sprite):
 			hit = pygame.mixer.Sound('./music/whip_impact.ogg')
 			cast.play()
 			whip = vine(self.player, self.rect.centerx, self.rect.centery, self.gs)
-			base = 10
+			base = 15
 			damage = (base * self.Attack)
 			i = 0
 			while(i < 3):
@@ -481,6 +498,7 @@ class Grass(pygame.sprite.Sprite):
 					hit.play()
 					enemy.is_hit("primary", damage)
 					break
+		self.update(enemy)
 
 	def ultimate(self, enemy, screen):
 		if((self.MP >= 100) and (self.state != "freeze")):
@@ -490,7 +508,7 @@ class Grass(pygame.sprite.Sprite):
 			self.MP -= 100
 			gd = giga(self.player, self.rect.centerx, self.rect.centery, self.gs)
 			base = 0
-			damage = base + (base * self.Attack)
+			damage = (base * self.Attack)
 			i = 0
 			while(i < 2):
 				gd.move()
@@ -500,8 +518,9 @@ class Grass(pygame.sprite.Sprite):
 					hit.play()
 					enemy.is_hit("giga", damage)
 					break
-				
-	def update(self, enemy, turn):
+		self.update(enemy)
+
+	def update(self, enemy):
 		drain_sound = pygame.mixer.Sound('./music/drain_sound.ogg')
 		freeze_sound = pygame.mixer.Sound('./music/freeze.ogg')
 		if(self.state == "drain"):
@@ -518,7 +537,7 @@ class Grass(pygame.sprite.Sprite):
 			else:
 				self.state = "normal"
 
-		if(turn == 1):
+		
 			if(self.MP <= 0):
 				self.recharge = 1
 			
@@ -534,7 +553,8 @@ class Grass(pygame.sprite.Sprite):
 				self.frozen += 1
 			else:
 				self.state = "normal"
-
+				
+	def tick(self):
 		if(self.idle == 0):
 			self.rect = self.rect.move(0, 5)
 			self.idle  = 1

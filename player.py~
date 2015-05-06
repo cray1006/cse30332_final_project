@@ -280,7 +280,7 @@ class Gamespace:
 								self.CFactory.CPro.transport.write('ultimate')
 							else:
 								text = self.myfont.render("MP needs to be > 100", 1, (0,0,0))
-								self.screen.blit(title, (50,200))
+								self.screen.blit(text, (50,200))
 								mp = 1
 								break
 								
@@ -301,8 +301,7 @@ class Gamespace:
 						reactor.stop()
 						return
 
-				self.player.creature.update(self.player.ecreature, 0)
-				self.player.ecreature.update(self.player.creature, 1)
+				self.player.creature.update()
 
 		# if opponent disconnects
 		elif self.player.state == 'quit':
@@ -343,7 +342,7 @@ class Gamespace:
 
 		pygame.display.flip()
 		if mp == 1:
-			sleep(2)
+			time.sleep(2)
 			
 
 	# Function to Display Battle Stats

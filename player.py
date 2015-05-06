@@ -303,8 +303,7 @@ class Gamespace:
 						reactor.stop()
 						return
 
-				self.player.creature.update(self.player.ecreature, 0)
-				self.player.ecreature.update(self.player.creature, 1)
+				self.player.creature.tick()
 
 		# if opponent disconnects
 		elif self.player.state == 'quit':
