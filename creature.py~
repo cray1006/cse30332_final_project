@@ -13,6 +13,7 @@ class Water:
 		self.Defense = 2
 		self.image = None
 		self.move = 1
+		self.state = "normal"	#"normal", "frozen", or "drain"
 		return
 
 class Fire:
@@ -24,6 +25,7 @@ class Fire:
 		self.Defense = 1
 		self.image = None
 		self.move = 2
+		self.state = "normal"
 		return
 
 class Grass:
@@ -34,4 +36,5 @@ class Grass:
 		self.Attack = .5
 		self.Defense = .5
 		self.image = None
+		self.move = 2
 		return
