@@ -4,11 +4,14 @@
 
 # Placeholder values! feel free to change
 
-import sys, pygame, math, time
+import sys, pygame, math, time, os
 from pygame.locals import *
 
-class Water:
-	def __init__(self, player):
+#class 
+
+class Water(pygame.sprite.Sprite):
+	def __init__(self, player, gs = None):
+		self.gs = gs
 		self.health = 100
 		self.currentHealth = 100
 		self.MP = 100
@@ -44,8 +47,12 @@ class Water:
 			elif((direction == "right") and (self.rect.x < 550)):
 				self.rect.x += 100
 
-class Fire:
-	def __init__(self, player):
+	def primary(self):
+		
+
+class Fire(pygame.sprite.Sprite):
+	def __init__(self, player, gs = None):
+		self.gs = gs
 		self.health = 100
 		self.currentHealth = 100
 		self.MP = 100
@@ -81,8 +88,9 @@ class Fire:
 			elif((direction == "right") and (self.rect.x < 550)):
 				self.rect.x += 100
 
-class Grass:
-	def __init__(self, player):
+class Grass(pygame.sprite.Sprite):
+	def __init__(self, player, gs = None):
+		self.gs = gs
 		self.health = 200
 		self.currentHealth = 100
 		self.MP = 100
