@@ -115,6 +115,7 @@ class vine(pygame.sprite.Sprite):
 		else:
 			self.rect.x -= 100
 
+
 class giga(pygame.sprite.Sprite):
 	def __init__(self, player, x, y, gs = None):
 		self.gs = gs
@@ -137,7 +138,6 @@ class giga(pygame.sprite.Sprite):
 			self.rect.x -= 100
 	
 		
-
 class Water(pygame.sprite.Sprite):
 	def __init__(self, player, gs = None):
 		self.gs = gs
@@ -148,6 +148,8 @@ class Water(pygame.sprite.Sprite):
 		self.Defense = 2
 		self.move = 1
 		self.state = "normal"	#"normal", "frozen", or "drain"
+		self.frozen = 0
+		self.drain = 0
 		self.player = player
 
 		if(self.player == 0):
@@ -176,7 +178,39 @@ class Water(pygame.sprite.Sprite):
 			elif((direction == "right") and (self.rect.x < 550)):
 				self.rect.x += 100
 
-	def primary(self):
+	def is_hit(self, attack, damage):
+		if((attack == "primary") or (attack == "pyro")):
+			self.health -= (damage - (damage / self.Defense))
+		elif(attack == "freeze"):
+			self.state = "frozen"
+			self.frozen = 0
+		elif(attack == "giga"):
+			self.state = "drain"
+			self.drain = 0
+		return
+
+	def primary(self, enemy):
+		lance = ice(self.player, self.rect.centerx, self.rect.centery, self.gs)
+		base = 10
+		damage = base + (base * self.Attack)
+		i = 0
+		while(i < 3):
+			lance.move()
+			if(pygame.sprite.collide_rect(lance, enemy)):
+				enemy.is_hit("primary", damage)
+				break
+
+	def ultimate(self):
+		self.MP -= 50
+		f = freeze(self.player, self.rect.centerx, self.rect.centery, self.gs)
+		base = 0
+		damage = base + (base * self.Attack)
+		i = 0
+		while(i < 2):
+			f.move()
+			if(pygame.sprite.collide_rect(f, enemy)):
+				enemy.is_hit("freeze")
+				break
 		
 
 class Fire(pygame.sprite.Sprite):
