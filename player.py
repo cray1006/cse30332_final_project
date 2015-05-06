@@ -229,7 +229,7 @@ class Gamespace:
 			self.displayStats()
 			self.screen.blit(self.bar, self.barRect)
 			
-			if self,player.creature.currentHealth <= 0 or self.player.ecreature.currentHealth <=0:
+			if self.player.creature.currentHealth <= 0 or self.player.ecreature.currentHealth <=0:
 				self.player.state = 'gameover'
 		
 			elif self.player.turn == 0:
