@@ -65,12 +65,13 @@ class serverProtocol(LineReceiver):
 class serverFactory(Factory):
 	def __init__(self):
 		self.players = [None] * 2
-		self.count = 0
+		self.count = -1
 		
 	def buildProtocol(self, addr):
 		s = serverProtocol(self)
-		self.players[self.count] = s
 		self.count += 1
+		self.players[self.count] = s
+		
 		return s
 
 
