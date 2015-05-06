@@ -259,11 +259,13 @@ class Gamespace:
 							self.player.turn = 0
 							self.player.creature.ultimate(self.player.ecreature, self.screen)
 							print "Ultimate Attack!"
-						elif mx > 339 and mx < 474.7 and my > 427.49 and my < 480:							
+						elif mx > 339 and mx < 474.7 and my > 427.49 and my < 480:				
 							self.player.turn = 0
+							self.player.creature.move("right")
 							print 'Forwards!'
 						elif mx > 477.5 and my > 427.49:
 							self.player.turn = 0
+							self.player.creature.move("left")
 							print 'Backwards!'
 			
 						if self.player.turn == 0:
