@@ -207,7 +207,7 @@ class Gamespace:
 					sys.exit()
 	
 		self.screen.fill(self.black)
-		image = pygame.image.load('selection.png')	
+		image = pygame.image.load('selection2.png')	
 		rect = image.get_rect()
 		title = self.myfont.render("Waiting for Opponent!", 1, (255,255,255))
 		self.screen.blit(image, rect)
