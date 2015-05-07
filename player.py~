@@ -85,11 +85,12 @@ class commandConnProtocol(Protocol):
 				if data == 'primary':
 					self.player.ecreature.primary(self.player.creature, self.player.screen)
 				elif data == 'ultimate':
+					print "oh shit"
 					self.player.ecreature.ultimate(self.player.creature, self.player.screen)
 				elif data == 'right':
-					self.player.ecreature.move("right")
+					self.player.ecreature.move("right", self.player.creature)
 				elif data == 'left':
-					self.player.ecreature.move("left")	
+					self.player.ecreature.move("left", self.player.creature)	
 				self.player.turn = 1			
 
 			
@@ -279,19 +280,21 @@ class Gamespace:
 								self.player.creature.ultimate(self.player.ecreature, self.screen)
 								self.CFactory.CPro.transport.write('ultimate')
 							else:
-								text = self.myfont.render("MP needs to be > 100", 1, (0,0,0))
-								self.screen.blit(text, (50,200))
+								msg = pygame.image.load('mpmsg.png')
+								mrect = msg.get_rect()
+								mrect.y = 200
+								self.screen.blit(msg, mrect)
 								mp = 1
 								break
 								
 						elif mx > 339 and mx < 474.7 and my > 427.49 and my < 480:				
 					
 							self.player.turn = 0
-							self.player.creature.move("right")
+							self.player.creature.move("right", self.player.ecreature)
 							self.CFactory.CPro.transport.write('right')
 						elif mx > 477.5 and my > 427.49:
 							self.player.turn = 0
-							self.player.creature.move("left")
+							self.player.creature.move("left", self.player.ecreature)
 							self.CFactory.CPro.transport.write('left')
 			
 						if self.player.turn == 0:
@@ -301,7 +304,7 @@ class Gamespace:
 						reactor.stop()
 						return
 
-				self.player.creature.update()
+				self.player.creature.tick()
 
 		# if opponent disconnects
 		elif self.player.state == 'quit':
@@ -328,11 +331,15 @@ class Gamespace:
 
 			# Check who the winner is
 			if self.player.creature.currentHealth > self.player.ecreature.currentHealth:
-				title = self.myfont.render("Congratulations! YOU WIN!", 1, (0,0,0))
+				msg = pygame.image.load('won.png')
+				mrect = msg.get_rect()
+				mrect.y = 200
 			else:
-				title = self.myfont.render("Better luck next time!", 1, (0,0,0))
+				msg = pygame.image.load('lost.png')
 
-			self.screen.blit(title, (50,200))
+			mrect = msg.get_rect()
+			mrect.y = 200
+			self.screen.blit(msg, mrect)
 			self.screen.blit(self.bar, self.barRect)
 			pygame.display.flip()
 			time.sleep(4)

@@ -87,9 +87,9 @@ class commandConnProtocol(Protocol):
 				elif data == 'ultimate':
 					self.player.ecreature.ultimate(self.player.creature, self.player.screen)
 				elif data == 'right':
-					self.player.ecreature.move("right")
+					self.player.ecreature.move("right", self.player.creature)
 				elif data == 'left':
-					self.player.ecreature.move("left")	
+					self.player.ecreature.move("left", self.player.creature)	
 				self.player.turn = 1			
 
 			
@@ -289,11 +289,11 @@ class Gamespace:
 						elif mx > 339 and mx < 474.7 and my > 427.49 and my < 480:				
 					
 							self.player.turn = 0
-							self.player.creature.move("right")
+							self.player.creature.move("right", self.player.ecreature)
 							self.CFactory.CPro.transport.write('right')
 						elif mx > 477.5 and my > 427.49:
 							self.player.turn = 0
-							self.player.creature.move("left")
+							self.player.creature.move("left", self.player.ecreature)
 							self.CFactory.CPro.transport.write('left')
 			
 						if self.player.turn == 0:
