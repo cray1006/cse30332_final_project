@@ -110,9 +110,9 @@ class Gamespace:
 		pygame.mixer.init()
 		pygame.mixer.music.load('./music/title.wav')
 		pygame.mixer.music.play(-1, 0.0)
-		self.myfont = pygame.font.SysFont("monospace",50)
-		self.myfont2 = pygame.font.SysFont("monospace",25)
-		self.myfont3 = pygame.font.SysFont("monospace",20)
+		self.myfont = pygame.font.SysFont("monospace",30)
+		self.myfont2 = pygame.font.SysFont("monospace",20)
+		self.myfont3 = pygame.font.SysFont("monospace",15)
 		pygame.key.set_repeat(1,50)
 
 		self.size = self.width, self.height = 640, 480

@@ -40,8 +40,6 @@ class commandConnProtocol(Protocol):
 		return
 
 	def dataReceived(self, data):
-		print self.state
-		print data
 		if self.state == 'start':
 				
 			if data == '0':
@@ -85,7 +83,6 @@ class commandConnProtocol(Protocol):
 				if data == 'primary':
 					self.player.ecreature.primary(self.player.creature, self.player.screen)
 				elif data == 'ultimate':
-					print "oh shit"
 					self.player.ecreature.ultimate(self.player.creature, self.player.screen)
 				elif data == 'right':
 					self.player.ecreature.move("right", self.player.creature)
@@ -113,9 +110,9 @@ class Gamespace:
 		pygame.mixer.init()
 		pygame.mixer.music.load('./music/title.wav')
 		pygame.mixer.music.play(-1, 0.0)
-		self.myfont = pygame.font.SysFont("monospace",50)
-		self.myfont2 = pygame.font.SysFont("monospace",25)
-		self.myfont3 = pygame.font.SysFont("monospace",20)
+		self.myfont = pygame.font.SysFont("monospace",40)
+		self.myfont2 = pygame.font.SysFont("monospace",20)
+		self.myfont3 = pygame.font.SysFont("monospace",15)
 		pygame.key.set_repeat(1,50)
 
 		self.size = self.width, self.height = 640, 480
@@ -127,7 +124,7 @@ class Gamespace:
 		self.arenaRect = self.arenabackground.get_rect()
 		self.oppturn = pygame.image.load('oppturn.png')
 		self.oppturnRect = self.oppturn.get_rect()
-		self.oppturnRect.y = 200
+		self.oppturnRect.y = 380
 		self.yourturn = pygame.image.load('yourturn.png')
 		self.yourturnRect = self.yourturn.get_rect()
 		self.yourturnRect.y = 344
@@ -173,7 +170,7 @@ class Gamespace:
 
 			events = pygame.event.get()
 			for event in events:
-
+				# initialize player creature based on selection
 				if event.type == MOUSEBUTTONDOWN:
 					mx, my = pygame.mouse.get_pos()	
 					if mx < 205:
