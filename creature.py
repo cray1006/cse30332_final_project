@@ -223,7 +223,7 @@ class Water(pygame.sprite.Sprite):
 			base = 0
 			damage = (base * self.Attack)
 			i = 0
-			while(i < 1):
+			while(i < 2):
 				i += 1
 				f.move()
 				screen.blit(f.image, f.rect)
@@ -404,7 +404,7 @@ class Fire(pygame.sprite.Sprite):
 			base = 30
 			damage = (base * self.Attack)
 			i = 0
-			while(i < 1):
+			while(i < 2):
 				i += 1
 				pb.move()
 				screen.blit(pb.image, pb.rect)
@@ -515,7 +515,7 @@ class Grass(pygame.sprite.Sprite):
 			base = 0
 			damage = (base * self.Attack)
 			i = 0
-			while(i < 1):
+			while(i < 2):
 				i += 1
 				gd.move()
 				screen.blit(gd.image, gd.rect)
