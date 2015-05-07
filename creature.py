@@ -1,34 +1,42 @@
 # Christopher Ray & Dinh Do
 # Creature Battler - Final Project
-# creature.py
+# CSE 30332
+# 7 May 2015
 
+# creature.py
+#class definitions for the 3 different creatures and their abilities
 
 import sys, pygame, math, time, os
 from pygame.locals import *
 
-class fireball(pygame.sprite.Sprite):
-	def __init__(self, player, x, y, gs = None):
-		self.gs = gs
-		self.image = pygame.image.load('fireball.png')
+####################################
+#Defining attack sprites
+#Note that all attack sprites classes pretty much follow the same logic, so only the first one is commented
+####################################
 
-		if(player != 0):
+class fireball(pygame.sprite.Sprite):	#class definition for fireball sprite
+	def __init__(self, player, x, y, gs = None):	#defining init
+		self.gs = gs	#setting gamespace
+		self.image = pygame.image.load('fireball.png')	#loading image
+
+		if(player != 0):	#flip the image if this is for the enemy creature
 			self.image = pygame.transform.flip(self.image, 1, 0)
 
-		self.rect = self.image.get_rect()
-		self.rect.x = x
+		self.rect = self.image.get_rect()	#setting the image's rect
+		self.rect.x = x	#positioning the image
 		self.rect.y = y
-		color = self.image.get_at((0,0))
-		self.image.set_colorkey(color)
-		self.player = player
+		color = self.image.get_at((0,0))	#getting color from the sprite's background
+		self.image.set_colorkey(color)	#making the sprite's background transparent
+		self.player = player	#player 0 is you, player 1 is your opponent across the network
 
-	def move(self):
-		if(self.player == 0):
+	def move(self):	#defining move function
+		if(self.player == 0):	#if you made the attack, the sprite should travel from left to right
 			self.rect = self.rect.move(75, 0)
 		else:
-			self.rect = self.rect.move(-75, 0)
+			self.rect = self.rect.move(-75, 0)	#if the opponent made the attack, the sprite should travel from right to left
 
 
-class pyro(pygame.sprite.Sprite):
+class pyro(pygame.sprite.Sprite):	#class definition for pyroblast sprite
 	def __init__(self, player, x, y, gs = None):
 		self.gs = gs
 		self.image = pygame.image.load('pyroblast.png')
@@ -49,7 +57,8 @@ class pyro(pygame.sprite.Sprite):
 		else:
 			self.rect = self.rect.move(-75, 0)
 
-class ice(pygame.sprite.Sprite):
+
+class ice(pygame.sprite.Sprite):	#class definition for ice lance sprite
 	def __init__(self, player, x, y, gs = None):
 		self.gs = gs
 		self.image = pygame.image.load('ice_lance.png')
@@ -71,7 +80,7 @@ class ice(pygame.sprite.Sprite):
 			self.rect = self.rect.move(-75, 0)
 
 
-class freeze(pygame.sprite.Sprite):
+class freeze(pygame.sprite.Sprite):	#class definition for freeze sprite
 	def __init__(self, player, x, y, gs = None):
 		self.gs = gs
 		self.image = pygame.image.load('freeze.png')
@@ -93,7 +102,7 @@ class freeze(pygame.sprite.Sprite):
 			self.rect = self.rect.move(-75, 0)
 
 
-class vine(pygame.sprite.Sprite):
+class vine(pygame.sprite.Sprite):	#class definition for vine whip sprite
 	def __init__(self, player, x, y, gs = None):
 		self.gs = gs
 		self.image = pygame.image.load('vine_whip.png')
@@ -115,7 +124,7 @@ class vine(pygame.sprite.Sprite):
 			self.rect = self.rect.move(-75, 0)
 
 
-class giga(pygame.sprite.Sprite):
+class giga(pygame.sprite.Sprite):	#class definition for giga drain sprite
 	def __init__(self, player, x, y, gs = None):
 		self.gs = gs
 		self.image = pygame.image.load('giga_drain.png')
@@ -135,25 +144,31 @@ class giga(pygame.sprite.Sprite):
 			self.rect = self.rect.move(75, 0)
 		else:
 			self.rect = self.rect.move(-75, 0)
-	
-		
-class Water(pygame.sprite.Sprite):
-	def __init__(self, player, gs = None):
-		pygame.mixer.init()
-		self.gs = gs
-		self.health = 100
-		self.currentHealth = 100
-		self.MP = 0
-		self.Attack = 1.3
-		self.Defense = 2
-		self.state = "normal"	#"normal", "frozen", or "drain"
-		self.frozen = 0
-		self.drain = 0
-		self.player = player
-		self.idle = 0
-		self.recharge = 0
 
-		if(self.player == 0):
+
+################################
+#Creature class definitions
+#These classes all follow the same logic, so only the first one contains extensive comments
+################################
+		
+class Water(pygame.sprite.Sprite):	#class definition for water creature
+	def __init__(self, player, gs = None):	#defining init and setting variables
+		pygame.mixer.init()	#initialzing mixer for sound effects	
+		self.gs = gs	#setting game space
+		self.health = 100	#setting base health
+		self.currentHealth = 100	#setting current health
+		self.MP = 0	#setting MP (needed in order to use ultimate attack)
+		self.Attack = 1.3	#setting base attack multiplier (used to determine how much damage an attack does)
+		self.Defense = 2	#setting base defense multiplier (used to determine damage reduction)
+		self.state = "normal"	#"normal", "frozen", or "drain"
+		self.frozen = 0	#keeps track of the number of turns the creature has been frozen
+		self.drain = 0	#keeps track of the number of turns the creature is under the effects of giga drain
+		self.player = player	#setting the player (player 0 is you, player 1 is opponent)
+		self.idle = 0	#used for idle animations
+		self.recharge = 0	#used to determine whether or not to restore MP
+
+		#load image and set position based on which player the sprite is for
+		if(self.player == 0):	
 			self.image = pygame.image.load('water_back.png')
 			self.rect = self.image.get_rect()
 			self.rect.x = 200
@@ -164,113 +179,112 @@ class Water(pygame.sprite.Sprite):
 			self.rect.x = 376
 			self.rect.y = 177
 		
-		color = self.image.get_at((0,0))
+		color = self.image.get_at((0,0))	#making sure the sprite's background is transparent
 		self.image.set_colorkey(color)
 
-	def move(self, direction, enemy):
-		if(self.state != "frozen"):
-			if(self.player == 0):
+	def move(self, direction, enemy):	#defining move function
+		if(self.state != "frozen"):	#character cannot move if frozen
+			if(self.player == 0):	#moving the player character based on user input
 				if((direction == "left") and (self.rect.x > 100)):
 					self.rect = self.rect.move(-100, 0)
 				elif((direction == "right") and (self.rect.x < 300)):
 					self.rect = self.rect.move(100, 0)
-			else:
+			else:	#moving the enemy character based on input received from the data connection
 				if((direction == "left") and (self.rect.x < 476)):
 					self.rect = self.rect.move(100, 0)
 				elif((direction == "right") and (self.rect.x > 276)):
 					self.rect = self.rect.move(-100, 0)
 	
-		self.update(enemy)
+		self.update(enemy)	#updating stats
 
-	def is_hit(self, attack, damage):
-		if((attack == "primary") or (attack == "pyro")):
+	def is_hit(self, attack, damage):	#defining is_hit function
+		if((attack == "primary") or (attack == "pyro")):	#reduce currentHealth due to a damaging attack
 			self.currentHealth -= (damage - (10 / self.Defense))
-		elif(attack == "freeze"):
+		elif(attack == "freeze"):	#set state to freeze due to being hit by freeze
 			self.state = "frozen"
 			self.frozen = 0
-		elif(attack == "giga"):
+		elif(attack == "giga"):	#set state to drain due to being hit by giga drain
 			self.state = "drain"
 			self.drain = 0
 
-	def primary(self, enemy, screen):
-		if(self.state != "frozen"):
-			cast = pygame.mixer.Sound('./music/ice_cast.ogg')
+	def primary(self, enemy, screen):	#defining primary attack function
+		if(self.state != "frozen"):	#cannot attack while frozen
+			cast = pygame.mixer.Sound('./music/ice_cast.ogg')	#initialzing sound effects
 			hit = pygame.mixer.Sound('./music/ice_hit.ogg')
-			cast.play()
-			lance = ice(self.player, self.rect.centerx, self.rect.centery, self.gs)
+			cast.play()	#playing cast sound effect
+			lance = ice(self.player, self.rect.centerx, self.rect.centery, self.gs)	#defining attack sprite
 			base = 15
-			damage = (base * self.Attack)
+			damage = (base * self.Attack)	#calculating the attack's damage
 			i = 0
-			while(i < 2):
+			while(i < 2):	#animating the attack sprite
 				i += 1
 				lance.move()
 				screen.blit(lance.image, lance.rect)
 				pygame.display.flip()
-				if(pygame.sprite.collide_rect(lance, enemy)):
-					hit.play()
-					enemy.is_hit("primary", damage)
+				if(pygame.sprite.collide_rect(lance, enemy)):	#checking if an attack sprite hit the opponent
+					hit.play()	#play the impact or hit sound effect
+					enemy.is_hit("primary", damage)	#calling opponent's is_hit() function
 					break
 		
-		self.update(enemy)
+		self.update(enemy)	#updating stats
 
-	def ultimate(self, enemy, screen):
-		if((self.MP >= 100) and (self.state != "frozen")):
-			cast = pygame.mixer.Sound('./music/ice_cast.ogg')
+	def ultimate(self, enemy, screen):	#defining ultimate attack function
+		if((self.MP >= 100) and (self.state != "frozen")):	#cannot use ultimate attack ith below 100 MP or frozen
+			cast = pygame.mixer.Sound('./music/ice_cast.ogg')	#initialzing sound effects
 			hit = pygame.mixer.Sound('./music/ice_hit.ogg')
-			cast.play()
-			self.MP -= 100
-			f = freeze(self.player, self.rect.centerx, self.rect.centery, self.gs)
+			cast.play()	#playing cast sound effect
+			self.MP -= 100	#draining MP
+			f = freeze(self.player, self.rect.centerx, self.rect.centery, self.gs)	#defining attack sprite
 			base = 0
-			damage = (base * self.Attack)
+			damage = (base * self.Attack)	#calculating damage
 			i = 0
-			while(i < 2):
+			while(i < 2):	#animating the attack sprite
 				i += 1
 				f.move()
 				screen.blit(f.image, f.rect)
 				pygame.display.flip()
-				if(pygame.sprite.collide_rect(f, enemy)):
-					hit.play()
-					enemy.is_hit("freeze", damage)
+				if(pygame.sprite.collide_rect(f, enemy)):	#checking for a collision
+					hit.play()	#play the impact sound effect
+					enemy.is_hit("freeze", damage)	#call opponent's is_hit() function
 					break
 
-		self.update(enemy)
+		self.update(enemy)	#updating stats
 
-	def update(self, enemy):
-		drain_sound = pygame.mixer.Sound('./music/drain_sound.ogg')
+	def update(self, enemy):	#defining update() function
+		drain_sound = pygame.mixer.Sound('./music/drain_sound.ogg')	#initializing sound effects
 		freeze_sound = pygame.mixer.Sound('./music/freeze.ogg')
-		if(self.state == "drain"):
-			self.currentHealth -= 5
-			if(enemy.currentHealth < 150):
+		if(self.state == "drain"):	#if the creature is under the effects of giga drain...
+			self.currentHealth -= 5	#reduce your current health by 5
+			if(enemy.currentHealth < 150):	#icrease opponent's health by 5, up to a maximum of 150
 				enemy.currentHealth += 5
 
 				if(enemy.currentHealth >= 150):
 					enemy.currentHealth = 150
 
-			if(self.drain < 3):
+			if(self.drain < 3):	#playing drain sound and keeping track of the number of turns creature is being drained (up to 4)
 				drain_sound.play()
 				self.drain += 1
 			else:
-				self.state = "normal"
+				self.state = "normal"	#setting creature back to normal state
 
 		
-		if(self.MP <= 0):
+		if(self.MP <= 0):	#MP only recharges once it has been reduced to 0
 			self.recharge = 1
 		
-		if(self.recharge == 1):
-			self.MP += 25
-			if(self.MP >= 100):
+		if(self.recharge == 1):	#rechargin MP
+			self.MP += 25	
+			if(self.MP >= 100):	#once MP is full, stop recharging
 				self.MP = 100
 				self.recharge = 0
 		
-		if(self.state == "frozen"):
-			if(self.frozen < 1):
+		if(self.state == "frozen"):	#if creature is frozen for 2 turns
+			if(self.frozen < 1):	#play the frozen sound effect
 				freeze_sound.play()
 				self.frozen += 1
 			else:
-				self.state = "normal"
-		
-				
-	def tick(self):
+				self.state = "normal"	#setting creature back to normal state
+			
+	def tick(self):	#defining tick function (cycles through the creature's idle animation
 		if(self.idle == 0):
 			self.rect = self.rect.move(0, 5)
 			self.idle  = 1
@@ -285,7 +299,7 @@ class Water(pygame.sprite.Sprite):
 			self.idle = 0
 
 				
-class Fire(pygame.sprite.Sprite):
+class Fire(pygame.sprite.Sprite):	#class definition for fire creature
 	def __init__(self, player, gs = None):
 		self.gs = gs
 		self.health = 100
@@ -431,7 +445,7 @@ class Fire(pygame.sprite.Sprite):
 			self.idle = 0
 
 
-class Grass(pygame.sprite.Sprite):
+class Grass(pygame.sprite.Sprite):	#class definition for grass creature
 	def __init__(self, player, gs = None):
 		self.gs = gs
 		self.health = 150
