@@ -40,8 +40,6 @@ class commandConnProtocol(Protocol):
 		return
 
 	def dataReceived(self, data):
-		print self.state
-		print data
 		if self.state == 'start':
 				
 			if data == '0':
@@ -126,7 +124,7 @@ class Gamespace:
 		self.arenaRect = self.arenabackground.get_rect()
 		self.oppturn = pygame.image.load('oppturn.png')
 		self.oppturnRect = self.oppturn.get_rect()
-		self.oppturnRect.y = 200
+		self.oppturnRect.y = 380
 		self.yourturn = pygame.image.load('yourturn.png')
 		self.yourturnRect = self.yourturn.get_rect()
 		self.yourturnRect.y = 344
@@ -172,7 +170,7 @@ class Gamespace:
 
 			events = pygame.event.get()
 			for event in events:
-
+				# initialize player creature based on selection
 				if event.type == MOUSEBUTTONDOWN:
 					mx, my = pygame.mouse.get_pos()	
 					if mx < 205:
