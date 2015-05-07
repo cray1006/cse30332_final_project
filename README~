@@ -1,5 +1,7 @@
-Christopher Ray  &  Dinh Do
+Christopher Ray & Dinh Do
 Creature Battler - Final Project
+CSE 30332
+7 May 2015
 README
 
 [Files Included]
@@ -12,36 +14,37 @@ README
 
 
 [Introduction]
-Creature Battler is a two-player game.  Players will initialize their game clients by each running player.py, choose their creature, then wait until the server connects them with another player. Each of the selectable creatures have unique strengths and weaknesses that add to the complexity of the game. Players will take turns selecting a move that consists of attacks and movements on the board to defeat their opponent using wit and skill. 
+Creature Battler is a two-player game.  Players will initialize their game clients by each running player.py, choose their creature, then wait until the server connects them with another player. Each of the selectable creatures have unique strengths and weaknesses that add to the complexity of the game. Players will take turns selecting a move that consists of attacks and movements on the board to defeat their opponent using wit, skill, and maybe a touch of luck. 
 
 
 [How to Run]
 - First run the server for the game by entering the command: 	./myserver.py
 onto the command line. (Note: The server is set to run on student02.cse.nd.edu and listens on port 40020 by default.)
+
 - Next, each player should run the client for the game, using the command:	./player.py
-this will start the game.
+This will start the game.
 
 
 [Gameplay Overview]
-After the player starts up player.py, they will be welcomed with the title screen of the game. After clicking or entering any key, they will be asked to select a creature by clicking on the appropriate section. There are three selectable creatures of types; grass, fire and water. The characteristics of each creature type will be described in the next section. Following the creature selection, the player will be sent to a waiting screen, where the player will wait until their opponent has connected to the server. Once an opponent has connected the actually gameplay will commence.
+After the player starts up player.py, they will be welcomed with the title screen of the game. After clicking or entering any key, they will be asked to select a creature by clicking on the appropriate section. There are three selectable creatures of types: grass, fire and water. The characteristics of each creature type will be described in the next section. Following the creature selection, the player will be sent to a waiting screen, where the player will wait until their opponent has connected to the server. Once an opponent has connected the actually gameplay will commence.
 
-During gameplay, each player takes turns in selecting a move from the menu bar below by clicking on it. Each player will have the option to select their creature's primary attack, ultimate attack or move (forwards or backwards). The primary and ultimate attack types and effects vary for each creature. Ultimate attacks are only allowed when the creature's MP reaches 100. As for movement, if the creature is far enough away from the opponent, the opponent's attacks won't reach the user's creature. After the player selects their move, the turn is passed over to the next player. This continues until one of the players' creatures health reaches 0. The game is exited after one of the players is defeated.
+During gameplay, each player takes turns in selecting a move from the menu bar below by clicking on it. Each player will have the option to select their creature's primary attack, their creature's ultimate attack, or to move forwards or backwards. The primary and ultimate attack types and effects vary for each creature. Ultimate attacks are only allowed when the creature's MP reaches 100. As for movement, if the creature is far enough away from the opponent, the opponent's attacks won't reach the user's creature. After the player selects their move, the turn is passed over to the next player. This continues until one of the players' creatures health reaches 0. The game is exited after one of the players is defeated or a player quits.
 
 
 Creature Types:
   Fire:
     Well rounded stats with slight focus on Attack
     Primary Attack = Fireball (moderate amount of damage)
-    Ultimate Attack = Pyroblast (Very high amount of damage, but completely drains MP)
-    Least amount of health among the 3 creatures
+    Ultimate Attack = Pyroblast (very high amount of damage)
+    Due to the nature of it's ultimate attack, the fire creature's MP regenerates the slowest.
     
   Water:
     Highest defense
     Primary Attack = Ice Lance (low amount of damage)
-    Ultimate Attack = Frost Nova (freezes the enemy creature for 1 round)
+    Ultimate Attack = Frost Nova (freezes the enemy creature for 2 rounds)
   
   Grass:
-    Highest Health, lowest defense
+    Highest health, lowest defense
     Primary Attack = Vine whip (average amount of damage, slightly less than fireball)
     Ultimate Attack = Giga Drain (drains the enemies health and restores your health for 3 turns)
     
